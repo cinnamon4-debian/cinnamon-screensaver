@@ -1,5 +1,5 @@
 cinnamon-screensaver (2.0.3-1~) UNRELEASED; urgency=medium
 
-  * Initial release.
+  * Initial release (Closes: #745913).
 
  -- Maximiliano Curia <maxy@debian.org>  Fri, 21 Feb 2014 13:52:55 +0100
