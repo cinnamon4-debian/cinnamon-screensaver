@@ -1,4 +1,4 @@
-cinnamon-screensaver (2.2.3-1) UNRELEASED; urgency=medium
+cinnamon-screensaver (2.2.3-1~) UNRELEASED; urgency=medium
 
   [ Maximiliano Curia ]
   * Initial release (Closes: #745913).
@@ -10,4 +10,4 @@ cinnamon-screensaver (2.2.3-1) UNRELEASED; urgency=medium
   * New upstream release 2.2.0.
   * Add myself to uploaders.
 
- -- Margarita Manterola <marga@debian.org>  Fri, 16 May 2014 09:56:42 +0200
+ -- Maximiliano Curia <maxy@debian.org>  Fri, 16 May 2014 16:47:55 +0200
