@@ -4,6 +4,7 @@ cinnamon-screensaver (2.2.3-1) UNRELEASED; urgency=medium
   * Initial release (Closes: #745913).
   * Update VCS fields.
   * New upstream release 2.2.3.
+  * Update copyright information.
 
   [ Margarita Manterola ]
   * New upstream release 2.2.0.
