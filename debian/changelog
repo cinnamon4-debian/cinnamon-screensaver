@@ -1,3 +1,9 @@
+cinnamon-screensaver (2.2.4-3) unstable; urgency=medium
+
+  * Release to unstable.
+
+ -- Maximiliano Curia <maxy@debian.org>  Wed, 16 Jul 2014 11:29:26 +0200
+
 cinnamon-screensaver (2.2.4-2) experimental; urgency=medium
 
   [ Margarita Manterola ]
