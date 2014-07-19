@@ -32,8 +32,7 @@ Vcs-Git: git://anonscm.debian.org/pkg-cinnamon/cinnamon-screensaver.git
 Package: cinnamon-screensaver
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
-Depends: cinnamon,
-         cinnamon-desktop-data (>= 1.0.0),
+Depends: cinnamon-desktop-data (>= 1.0.0),
          dbus-x11,
          gnome-icon-theme (>= 2.15.90),
          ${misc:Depends},
