@@ -1,11 +1,12 @@
 cinnamon-screensaver (2.2.4-4~) UNRELEASED; urgency=medium
 
-  * debian/control: remove cinnamon from dependecies. (Closes: #755190)
+  * debian/control: remove cinnamon from dependecies and added 
+    cinnamon-common as recommends. (Closes: #755190)
   * New patch: debian/patches/fix-user-switching, fixes user switching
     with gdm3.
   * Add systemd support, since ConsoleKit is deprecated.
 
- -- Fabio Fantoni <fantonifabio@tiscali.it>  Sat, 19 Jul 2014 14:54:58 +0200
+ -- Fabio Fantoni <fantonifabio@tiscali.it>  Thu, 24 Jul 2014 16:21:04 +0200
 
 cinnamon-screensaver (2.2.4-3) unstable; urgency=medium
 

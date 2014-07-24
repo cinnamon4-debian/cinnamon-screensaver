@@ -38,7 +38,9 @@ Depends: cinnamon-desktop-data (>= 1.0.0),
          gnome-icon-theme (>= 2.15.90),
          ${misc:Depends},
          ${shlibs:Depends}
-Recommends: gnome-power-manager | xfce4-power-manager, libpam-gnome-keyring
+Recommends: cinnamon-common,
+            gnome-power-manager | xfce4-power-manager,
+            libpam-gnome-keyring
 Description: Cinnamon screen saver and locker
  cinnamon-screensaver is a screen saver and locker that aims to have simple,
  sane and secure defaults, and be well integrated with the Cinnamon desktop.
