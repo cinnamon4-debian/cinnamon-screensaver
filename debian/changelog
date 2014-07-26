@@ -1,6 +1,6 @@
 cinnamon-screensaver (2.2.4-4~) UNRELEASED; urgency=medium
 
-  * debian/control: remove cinnamon from dependecies and added 
+  * debian/control: removed cinnamon from dependecies and added
     cinnamon-common as recommends. (Closes: #755190)
   * New patch: debian/patches/fix-user-switching, fixes user switching
     with gdm3.
