@@ -2,6 +2,8 @@
 
 export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+LOGIN_INFRA_YES := $(shell dpkg-architecture -qDEB_HOST_ARCH -ilinux-any && echo systemd || echo console-kit)
+LOGIN_INFRA_NO := $(shell dpkg-architecture -qDEB_HOST_ARCH -ilinux-any && echo console-kit || echo systemd)
 
 %:
 	dh $@ --parallel --with=autoreconf,gnome
@@ -12,8 +14,8 @@ override_dh_gnome_clean:
 override_dh_auto_configure:
 	dh_auto_configure -- \
 	    --enable-locking \
-	    --with-console-kit=no \
-	    --enable-systemd \
+	    --with-$(LOGIN_INFRA_YES)=yes \
+	    --with-$(LOGIN_INFRA_NO)=no \
 	    --libexecdir=\$${prefix}/lib/$(DEB_HOST_MULTIARCH)/cinnamon-screensaver
 
 override_dh_install:
