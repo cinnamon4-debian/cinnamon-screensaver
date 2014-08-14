@@ -1,4 +1,4 @@
-cinnamon-screensaver (2.2.4-5~) UNRELEASED; urgency=medium
+cinnamon-screensaver (2.2.4-5) unstable; urgency=medium
 
   [ Fabio Fantoni ]
   * Use systemd only with linux to solves FTBFS on kfreebsd. (Closes: #756907)
@@ -7,7 +7,7 @@ cinnamon-screensaver (2.2.4-5~) UNRELEASED; urgency=medium
   [ Maximiliano Curia ]
   * New patch: clang_FTBFS
 
- -- Fabio Fantoni <fantonifabio@tiscali.it>  Sun, 10 Aug 2014 13:56:32 +0200
+ -- Maximiliano Curia <maxy@debian.org>  Thu, 14 Aug 2014 03:45:40 +0200
 
 cinnamon-screensaver (2.2.4-4) unstable; urgency=medium
 
