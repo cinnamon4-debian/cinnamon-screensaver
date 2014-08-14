@@ -1,0 +1,44 @@
+Index: cinnamon-screensaver/src/gs-debug.c
+===================================================================
+--- cinnamon-screensaver.orig/src/gs-debug.c	2014-05-15 16:47:52.021167149 +0200
++++ cinnamon-screensaver/src/gs-debug.c	2014-08-14 03:36:51.848207922 +0200
+@@ -57,7 +57,10 @@
+ 
+         va_start (args, format);
+ 
++        #pragma clang diagnostic push
++        #pragma clang diagnostic ignored "-Wformat-nonliteral"
+         g_vsnprintf (buffer, 1024, format, args);
++        #pragma clang diagnostic pop
+ 
+         va_end (args);
+ 
+Index: cinnamon-screensaver/src/gs-fade.c
+===================================================================
+--- cinnamon-screensaver.orig/src/gs-fade.c	2014-08-14 03:38:29.732264699 +0200
++++ cinnamon-screensaver/src/gs-fade.c	2014-08-14 03:38:48.035526827 +0200
+@@ -420,7 +420,8 @@
+ 
+ #ifdef HAVE_XF86VMODE_GAMMA
+ 	if (g_getenv("LTSP_CLIENT")) {
+-		return FADE_TYPE_NONE;  /* We're on an LTSP Client, bad idea to fade at all */
++		/* We're on an LTSP Client, bad idea to fade at all */
++                goto fade_none;
+ 	}
+ 
+         res = XF86VidModeQueryExtension (GDK_DISPLAY_XDISPLAY (gdk_display_get_default ()), &event, &error);
+Index: cinnamon-screensaver/src/gs-listener-dbus.c
+===================================================================
+--- cinnamon-screensaver.orig/src/gs-listener-dbus.c	2014-05-15 16:47:52.021167149 +0200
++++ cinnamon-screensaver/src/gs-listener-dbus.c	2014-08-14 03:33:22.044658235 +0200
+@@ -359,7 +359,10 @@
+ 
+         va_list args;
+         va_start (args, format);
++        #pragma clang diagnostic push
++        #pragma clang diagnostic ignored "-Wformat-nonliteral"
+         vsnprintf (buf, sizeof (buf), format, args);
++        #pragma clang diagnostic pop
+         va_end (args);
+ 
+         gs_debug (buf);
