@@ -1,6 +1,6 @@
 Description:  Fix user switching on Debian. The GDM process is called gdm3.
 Author: Gábor Gombás <gombasg@digikabel.hu>
-Origin: upstream
+Origin: upstream - https://github.com/linuxmint/cinnamon-screensaver/commit/e2333feca12d39161696088eea501875a21c6158
 --- a/src/gs-lock-plug.c
 +++ b/src/gs-lock-plug.c
 @@ -189,7 +189,7 @@
