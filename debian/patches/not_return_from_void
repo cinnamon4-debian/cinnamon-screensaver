@@ -1,6 +1,6 @@
 Description: Remove return statement from void function
 Author: Maximiliano Curia <maxy@debian.org>
-Forwarded: not yet
+Forwarded: https://github.com/linuxmint/cinnamon-screensaver/pull/66
 Last-Update: 2014-08-23
 Index: cinnamon-screensaver/src/gs-fade.c
 ===================================================================
