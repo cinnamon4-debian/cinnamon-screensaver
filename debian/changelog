@@ -1,7 +1,7 @@
 cinnamon-screensaver (2.2.4-5) unstable; urgency=medium
 
   [ Fabio Fantoni ]
-  * Use systemd only with linux to solves FTBFS on kfreebsd. (Closes: #756907)
+  * Use systemd only with linux to solve FTBFS on kfreebsd. (Closes: #756907)
     Thanks to Philipp Kern.
 
   [ Maximiliano Curia ]
