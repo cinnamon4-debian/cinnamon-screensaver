@@ -1,10 +1,10 @@
-cinnamon-screensaver (2.2.4-6~) UNRELEASED; urgency=medium
+cinnamon-screensaver (2.2.4-6) unstable; urgency=medium
 
   * Split clang_FTBFS into two different patches:
     +  debian/patches/not_return_from_void
     +  debian/patches/ignore_clang_format_string_errors
 
- -- Margarita Manterola <marga@debian.org>  Sat, 23 Aug 2014 09:34:04 -0700
+ -- Margarita Manterola <marga@debian.org>  Sat, 25 Oct 2014 19:55:48 +0200
 
 cinnamon-screensaver (2.2.4-5) unstable; urgency=medium
 
