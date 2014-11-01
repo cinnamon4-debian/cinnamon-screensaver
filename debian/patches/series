@@ -1,4 +1,0 @@
-fix-locale-path
-fix-user-switching
-ignore_clang_format_string_errors
-not_return_from_void
