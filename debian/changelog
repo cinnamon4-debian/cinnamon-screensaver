@@ -6,6 +6,7 @@ cinnamon-screensaver (2.4.1-1~) UNRELEASED; urgency=medium
 
   [ Maximiliano Curia ]
   * Bump Standards-Version to 3.9.6, no changes needed.
+  * Update copyright information.
 
  -- Fabio Fantoni <fantonifabio@tiscali.it>  Sat, 21 Feb 2015 15:58:12 +0100
 
