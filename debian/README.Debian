@@ -10,4 +10,3 @@ might see warnings similar to:
     cinnamon-screensaver-dialog: PAM adding faulty module: lib/security/pam_gnome_keyring.so
 
 These can also be ignored.
-
