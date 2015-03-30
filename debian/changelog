@@ -1,3 +1,9 @@
+cinnamon-screensaver (2.4.2-1~) UNRELEASED; urgency=medium
+
+  * New upstream release.
+
+ -- Fabio Fantoni <fantonifabio@tiscali.it>  Mon, 30 Mar 2015 15:41:57 +0200
+
 cinnamon-screensaver (2.4.1-1) experimental; urgency=medium
 
   [ Fabio Fantoni ]
