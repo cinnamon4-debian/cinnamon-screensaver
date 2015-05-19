@@ -2,8 +2,8 @@ dnl -*- mode: m4 -*-
 
 AC_PREREQ(2.60)
 AC_INIT([cinnamon-screensaver],
-        [2.4.2],
-        [http://bugzilla.gnome.org/enter_bug.cgi?product=cinnamon-screensaver])
+        [2.6.0],
+        [https://github.com/linuxmint/cinnamon-screensaver/issues])
 
 AC_CONFIG_SRCDIR(src/cinnamon-screensaver.c)
 
@@ -38,14 +38,12 @@ GLIB_GSETTINGS
 
 # Dependencies
 
-DBUS_REQUIRED_VERSION=0.30
-GLIB_REQUIRED_VERSION=2.25.6
-GTK_REQUIRED_VERSION=2.99.3
+DBUS_REQUIRED_VERSION=0.78
+GLIB_REQUIRED_VERSION=2.37.3
+GTK_REQUIRED_VERSION=3.1.4
 X11_REQUIRED_VERSION=1.0
-CINNAMON_DESKTOP_REQUIRED_VERSION=1.0.0
-
-
-LIBGNOMEKBDUI_REQUIRED_VERSION=0.1
+CINNAMON_DESKTOP_REQUIRED_VERSION=2.4.0
+LIBGNOMEKBDUI_REQUIRED_VERSION=3.6.0
 
 AC_CHECK_HEADERS(unistd.h)
 AC_CHECK_HEADERS(crypt.h sys/select.h)
@@ -60,6 +58,7 @@ PKG_CHECK_MODULES(CINNAMON_SCREENSAVER,
         gtk+-3.0 >= $GTK_REQUIRED_VERSION
         dbus-glib-1 >= $DBUS_REQUIRED_VERSION
         cinnamon-desktop >= $CINNAMON_DESKTOP_REQUIRED_VERSION)
+PKG_CHECK_MODULES([WEBKIT], [webkit2gtk-3.0],, [PKG_CHECK_MODULES([WEBKIT], [webkit2gtk-4.0])])
 AC_SUBST(CINNAMON_SCREENSAVER_CFLAGS)
 AC_SUBST(CINNAMON_SCREENSAVER_LIBS)
 
@@ -101,7 +100,7 @@ AC_SUBST(CINNAMON_SCREENSAVER_SAVER_LIBS)
 
 # Find out the version of DBUS we're using
 
-dbus_version=`pkg-config --modversion dbus-1`
+dbus_version=`$PKG_CONFIG --modversion dbus-1`
 DBUS_VERSION_MAJOR=`echo $dbus_version | awk -F. '{print $1}'`
 DBUS_VERSION_MINOR=`echo $dbus_version | awk -F. '{print $2}'`
 DBUS_VERSION_MICRO=`echo $dbus_version | awk -F. '{print $3}'`
@@ -135,7 +134,7 @@ fi
 
 # Find out where the session service file goes
 # The sad sed hack is recomended by section 27.10 of the automake manual.
-DBUS_SESSION_SERVICE_DIR=`pkg-config --variable session_bus_services_dir dbus-1 | sed -e 's,/usr/share,${datarootdir},g'`
+DBUS_SESSION_SERVICE_DIR=`$PKG_CONFIG --variable session_bus_services_dir dbus-1 | sed -e 's,/usr/share,${datarootdir},g'`
 AC_SUBST(DBUS_SESSION_SERVICE_DIR)
 
 dnl ---------------------------------------------------------------------------
@@ -579,54 +578,17 @@ if test "x$have_pam" = "xyes"; then
 fi
 
 dnl ---------------------------------------------------------------------------
-dnl ConsoleKit
+dnl logind support
 dnl ---------------------------------------------------------------------------
 
-AC_ARG_WITH(console-kit,
-            AS_HELP_STRING([--with-console-kit],
-                           [Add ConsoleKit support]),,
-            with_console_kit=auto)
+PKG_CHECK_MODULES(LOGIND, [libsystemd-login], [have_logind=yes], [have_logind=no])
 
-use_console_kit=no
-if test "x$with_console_kit" != "xno" ; then
-        use_console_kit=yes
-        AC_DEFINE(WITH_CONSOLE_KIT, 1, [ConsoleKit support])
-fi
-AM_CONDITIONAL(WITH_CONSOLE_KIT, test x$use_console_kit = xyes)
-AC_SUBST(WITH_CONSOLE_KIT)
-
-dnl ---------------------------------------------------------------------------
-dnl systemd
-dnl ---------------------------------------------------------------------------
-
-AC_ARG_WITH(systemd,
-            AS_HELP_STRING([--with-systemd],
-                           [Add systemd support]),
-            [with_systemd=$withval], [with_systemd=auto])
-
-PKG_CHECK_MODULES(SYSTEMD,
-                  [libsystemd-login],
-                  [have_systemd=yes], [have_systemd=no])
-
-if test "x$with_systemd" = "xauto" ; then
-        if test x$have_systemd = xno ; then
-                use_systemd=no
-        else
-                use_systemd=yes
-        fi
-else
-	use_systemd=$with_systemd
+if test x$have_logind = xyes ; then
+        AC_DEFINE(HAVE_LOGIND, 1, [logind support])
 fi
 
-if test "x$use_systemd" = "xyes"; then
-        if test "x$have_systemd" = "xno"; then
-                AC_MSG_ERROR([Systemd support explicitly required, but systemd not found])
-        fi
-
-        AC_DEFINE(WITH_SYSTEMD, 1, [systemd support])
-fi
-AC_SUBST(SYSTEMD_CFLAGS)
-AC_SUBST(SYSTEMD_LIBS)
+AC_SUBST(LOGIND_CFLAGS)
+AC_SUBST(LOGIND_LIBS)
 
 dnl ---------------------------------------------------------------------------
 dnl libgnomekbd
@@ -766,6 +728,7 @@ po/Makefile.in
 src/Makefile
 src/cinnamon-screensaver.desktop.in
 data/Makefile
+data/screensavers/Makefile
 data/org.cinnamon.ScreenSaver.service
 files/Makefile
 ])
@@ -792,8 +755,7 @@ echo "
         Screen locking enabled:   ${enable_locking}
         Show keyboard indicator:  ${with_kbd_layout_indicator}
 
-        systemd:                  ${use_systemd}
-        ConsoleKit:               ${use_console_kit}
+        logind supported:         ${have_logind}
 "
 
 if test "x$have_pam" = "xyes" ; then

@@ -51,6 +51,12 @@ static gboolean popup_dialog_idle (GSWindow *window);
 static void gs_window_dialog_finish (GSWindow *window);
 static void remove_command_watches (GSWindow *window);
 
+static void gs_window_show_screensaver (GSWindow *window);
+static void gs_window_hide_screensaver (GSWindow *window);
+static void gs_window_kill_screensaver (GSWindow *window);
+
+static gboolean spawn_on_window (GSWindow *window, char *command, int *pid, GIOFunc watch_func, gpointer user_data, gint *watch_id);
+
 enum {
         DIALOG_RESPONSE_CANCEL,
         DIALOG_RESPONSE_OK
@@ -58,12 +64,15 @@ enum {
 
 #define MAX_QUEUED_EVENTS 16
 #define INFO_BAR_SECONDS 30
+#define SCREENSAVER_NAME_KEY "screensaver-name"
 
 #define GS_WINDOW_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_WINDOW, GSWindowPrivate))
 
 struct GSWindowPrivate
 {
         int        monitor;
+
+        GDBusConnection *session_bus;
 
         GdkRectangle geometry;
         guint      obscured : 1;
@@ -78,6 +87,7 @@ struct GSWindowPrivate
         char      *logout_command;
         char      *keyboard_command;
 
+        GtkWidget *stack;
         GtkWidget *vbox;
         GtkWidget *panel;
         GtkWidget *clock;
@@ -87,6 +97,11 @@ struct GSWindowPrivate
         GtkWidget *keyboard_socket;
         GtkWidget *info_bar;
         GtkWidget *info_content;
+        GtkWidget *lock_screen;
+
+        GtkWidget *screensaver;
+        gint       screensaver_pid;
+        gint       screensaver_watch_id;
 
         cairo_surface_t *background_surface;
 
@@ -150,6 +165,7 @@ enum {
 static guint           signals [LAST_SIGNAL] = { 0, };
 
 G_DEFINE_TYPE (GSWindow, gs_window, GTK_TYPE_WINDOW)
+
 
 static void
 set_invisible_cursor (GdkWindow *window,
@@ -616,28 +632,127 @@ window_select_shape_events (GSWindow *window)
 }
 
 static void
+create_screensaver_socket (GSWindow *window,
+                           guint32   id)
+{
+  window->priv->screensaver = gtk_socket_new ();
+
+  gtk_stack_add_named (GTK_STACK (window->priv->stack), window->priv->screensaver, "screensaver");
+  gtk_widget_show (window->priv->screensaver);
+  gtk_socket_add_id (GTK_SOCKET (window->priv->screensaver), id);
+  gs_window_show_screensaver (window);
+}
+                           
+
+static gboolean
+screensaver_command_watch (GIOChannel   *source,
+                           GIOCondition  condition,
+                           GSWindow     *window)
+{
+  gboolean finished = FALSE;
+
+  g_return_val_if_fail (GS_IS_WINDOW (window), FALSE);
+
+  if (condition & G_IO_IN) {
+    GIOStatus status;
+    GError   *error = NULL;
+    char     *line;
+
+    line = NULL;
+    status = g_io_channel_read_line (source, &line, NULL, NULL, &error);
+
+    gs_debug ("command output: %s", line);
+    switch (status) {
+      case G_IO_STATUS_NORMAL:
+        if (strstr (line, "WINDOW ID=") != NULL) {
+          guint32 id;
+          char    c;
+          if (1 == sscanf (line, " WINDOW ID= %" G_GUINT32_FORMAT " %c", &id, &c)) {
+            create_screensaver_socket (window, id);
+          }
+        }
+        break;
+      case G_IO_STATUS_EOF:
+        finished = TRUE;
+        break;
+      case G_IO_STATUS_ERROR:
+        finished = TRUE;
+        gs_debug ("Error reading from child: %s\n", error->message);
+        g_error_free (error);
+        return FALSE;
+      default:
+        break;
+    }
+    g_free (line);
+  } else if (condition & G_IO_HUP) {
+      finished = TRUE;
+  }
+
+  if (finished) {
+    window->priv->screensaver_watch_id = 0;
+    gs_window_kill_screensaver (window);
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+
+static void
 gs_window_real_show (GtkWidget *widget)
 {
-        GSWindow *window;
+  GSWindow *window;
 
-        if (GTK_WIDGET_CLASS (gs_window_parent_class)->show) {
-                GTK_WIDGET_CLASS (gs_window_parent_class)->show (widget);
-        }
+  if (GTK_WIDGET_CLASS (gs_window_parent_class)->show) {
+    GTK_WIDGET_CLASS (gs_window_parent_class)->show (widget);
+  }
 
-        set_invisible_cursor (gtk_widget_get_window (widget), TRUE);
+  set_invisible_cursor (gtk_widget_get_window (widget), TRUE);
 
-        window = GS_WINDOW (widget);
-        if (window->priv->timer) {
-                g_timer_destroy (window->priv->timer);
-        }
-        window->priv->timer = g_timer_new ();
+  window = GS_WINDOW (widget);
+  if (window->priv->timer) {
+    g_timer_destroy (window->priv->timer);
+  }
+  window->priv->timer = g_timer_new ();
 
-        remove_watchdog_timer (window);
-        add_watchdog_timer (window, 30);
+  remove_watchdog_timer (window);
+  add_watchdog_timer (window, 30);
 
-        select_popup_events ();
-        window_select_shape_events (window);
-        gdk_window_add_filter (NULL, (GdkFilterFunc)xevent_filter, window);
+  select_popup_events ();
+  window_select_shape_events (window);
+  gdk_window_add_filter (NULL, (GdkFilterFunc)xevent_filter, window);
+
+
+  const char *screensaver_name = g_settings_get_string (window->priv->settings, SCREENSAVER_NAME_KEY);
+  if (strlen(screensaver_name) != 0 && !window->priv->screensaver_pid) {
+    char *screensaver_path = g_build_filename(GTKBUILDERDIR,
+                                              "screensavers",
+                                              screensaver_name,
+                                              "main",
+                                              NULL);
+    gboolean result = spawn_on_window (window,
+                                       screensaver_path,
+                                       &window->priv->screensaver_pid,
+                                       (GIOFunc)screensaver_command_watch,
+                                       window,
+                                       &window->priv->screensaver_watch_id);
+    if (!result) {
+       screensaver_path = g_build_filename(g_get_home_dir(),
+                                           ".local/share/cinnamon-screensaver/screensavers",
+                                           screensaver_name,
+                                           "main",
+                                           NULL);
+
+      spawn_on_window (window,
+                       screensaver_path,
+                       &window->priv->screensaver_pid,
+                       (GIOFunc)screensaver_command_watch,
+                       window,
+                       &window->priv->screensaver_watch_id);
+ 
+    }
+    g_free (screensaver_path);
+  }
 }
 
 static void
@@ -1062,6 +1177,36 @@ kill_dialog_command (GSWindow *window)
 }
 
 static void
+gs_window_show_screensaver (GSWindow *window) {
+  if (window->priv->screensaver) {
+    gtk_stack_set_visible_child_name (GTK_STACK (window->priv->stack), "screensaver");
+  }
+}
+
+static void
+gs_window_hide_screensaver (GSWindow *window) {
+  gtk_stack_set_visible_child_name (GTK_STACK (window->priv->stack), "lock_screen");
+}
+
+static void
+gs_window_kill_screensaver (GSWindow *window)
+{
+  gs_window_hide_screensaver (window);
+  if (window->priv->screensaver) {
+    gtk_widget_destroy (window->priv->screensaver);
+    window->priv->screensaver = NULL;
+  }
+  if (window->priv->screensaver_pid > 0) {
+    window->priv->screensaver_watch_id = 0;
+    signal_pid (window->priv->screensaver_pid, SIGTERM);
+    wait_on_child (window->priv->lock_pid);
+
+    g_spawn_close_pid (window->priv->lock_pid);
+    window->priv->lock_pid = 0;
+  }
+}
+
+static void
 keyboard_command_finish (GSWindow *window)
 {
         g_return_if_fail (GS_IS_WINDOW (window));
@@ -1167,6 +1312,7 @@ create_lock_socket (GSWindow *window,
         window->priv->lock_socket = gtk_socket_new ();
         window->priv->lock_box = gtk_alignment_new (0.5, 0.5, 0, 0);
         gtk_widget_show (window->priv->lock_box);
+
         gtk_box_pack_start (GTK_BOX (window->priv->vbox), window->priv->lock_box, TRUE, TRUE, 0);
 
         gtk_container_add (GTK_CONTAINER (window->priv->lock_box), window->priv->lock_socket);
@@ -1292,6 +1438,8 @@ popdown_dialog (GSWindow *window)
 
         remove_popup_dialog_idle (window);
         remove_command_watches (window);
+
+        gs_window_show_screensaver (window);
 }
 
 static gboolean
@@ -1316,9 +1464,11 @@ lock_command_watch (GIOChannel   *source,
                         gs_debug ("command output: %s", line);
 
                         if (strstr (line, "WINDOW ID=") != NULL) {
+                                gs_debug ("WINDOW ID command");
                                 guint32 id;
                                 char    c;
                                 if (1 == sscanf (line, " WINDOW ID= %" G_GUINT32_FORMAT " %c", &id, &c)) {
+                                        gs_debug ("create socket call");
                                         create_lock_socket (window, id);
                                 }
                         } else if (strstr (line, "NOTICE=") != NULL) {
@@ -1361,7 +1511,8 @@ lock_command_watch (GIOChannel   *source,
         if (finished) {
                 popdown_dialog (window);
 
-                if (window->priv->dialog_response == DIALOG_RESPONSE_OK) {
+                if (window->priv->dialog_response == DIALOG_RESPONSE_OK) {  
+                        gs_window_kill_screensaver (window);
                         add_emit_deactivated_idle (window);
                 }
 
@@ -1372,6 +1523,7 @@ lock_command_watch (GIOChannel   *source,
 
         return TRUE;
 }
+
 
 static gboolean
 is_logout_enabled (GSWindow *window)
@@ -1482,6 +1634,8 @@ gs_window_request_unlock (GSWindow *window)
         }
 
         window_set_dialog_up (window, TRUE);
+
+        gs_window_hide_screensaver (window);
 }
 
 void
@@ -1747,21 +1901,88 @@ maybe_handle_activity (GSWindow *window)
         return handled;
 }
 
+static void
+change_screen_brightness (GSWindow   *window,
+                   const char *method)
+{
+        GDBusMessage *message;
+
+        if (window->priv->session_bus == NULL) {
+                return;
+        }
+
+        gs_debug ("change_screen_brightness: %s", method);
+
+        message = g_dbus_message_new_method_call ("org.cinnamon.SettingsDaemon",
+                                                  "/org/cinnamon/SettingsDaemon/Power",
+                                                  "org.cinnamon.SettingsDaemon.Power.Screen",
+                                                  method);
+
+        g_dbus_connection_send_message (window->priv->session_bus,
+                                        message,
+                                        G_DBUS_SEND_MESSAGE_FLAGS_NONE,
+                                        NULL,
+                                        NULL);
+
+        g_object_unref (message);
+}
+
+static void
+change_keyboard_brightness (GSWindow   *window,
+                   const char *method)
+{
+        GDBusMessage *message;
+
+        if (window->priv->session_bus == NULL) {
+                return;
+        }
+
+        gs_debug ("change_keyboard_brightness: %s", method);
+
+        message = g_dbus_message_new_method_call ("org.cinnamon.SettingsDaemon",
+                                                  "/org/cinnamon/SettingsDaemon/Power",
+                                                  "org.cinnamon.SettingsDaemon.Power.Keyboard",
+                                                  method);
+
+        g_dbus_connection_send_message (window->priv->session_bus,
+                                        message,
+                                        G_DBUS_SEND_MESSAGE_FLAGS_NONE,
+                                        NULL,
+                                        NULL);
+
+        g_object_unref (message);
+}
+
 static gboolean
 gs_window_real_key_press_event (GtkWidget   *widget,
                                 GdkEventKey *event)
 {
-        /*g_message ("KEY PRESS state: %u keyval %u", event->state, event->keyval);*/
+        GSWindow *window = GS_WINDOW (widget);
 
-        /* Ignore brightness keys */
-        if (event->hardware_keycode == 101 || event->hardware_keycode == 212) {
-                gs_debug ("Ignoring brightness keys");
+        g_debug ("KEY PRESS state: %u keyval %u; hw keycode: %u", event->state, event->keyval, event->hardware_keycode);
+
+        /* Ignore brightness keys for the purpose of invoking the password
+         * prompt (return TRUE), but do actually forward the brightness
+         * events to the settings daemon.
+         */
+        switch (event->keyval) {
+        	case GDK_KEY_MonBrightnessUp:
+                change_screen_brightness (window, "StepUp");
+                return TRUE;
+        	case GDK_KEY_MonBrightnessDown:
+                change_screen_brightness (window, "StepDown");
+                return TRUE;
+            case GDK_KEY_KbdBrightnessUp:
+                change_keyboard_brightness (window, "StepUp");
+                return TRUE;
+        	case GDK_KEY_KbdBrightnessDown:
+                change_keyboard_brightness (window, "StepDown");
                 return TRUE;
         }
 
-        maybe_handle_activity (GS_WINDOW (widget));
+        maybe_handle_activity (window);
 
-        queue_key_event (GS_WINDOW (widget), event);
+        queue_key_event (window, event);
 
         if (GTK_WIDGET_CLASS (gs_window_parent_class)->key_press_event) {
                 GTK_WIDGET_CLASS (gs_window_parent_class)->key_press_event (widget, event);
@@ -2191,6 +2412,8 @@ gs_window_init (GSWindow *window)
 {       
         window->priv = GS_WINDOW_GET_PRIVATE (window);
 
+        window->priv->session_bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
+
         window->priv->geometry.x      = -1;
         window->priv->geometry.y      = -1;
         window->priv->geometry.width  = -1;
@@ -2221,8 +2444,15 @@ gs_window_init (GSWindow *window)
                                | GDK_VISIBILITY_NOTIFY_MASK
                                | GDK_ENTER_NOTIFY_MASK
                                | GDK_LEAVE_NOTIFY_MASK);
-                           
-        GtkWidget *main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+
+        window->priv->stack = gtk_stack_new();
+        window->priv->lock_screen = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+        gtk_stack_add_named (GTK_STACK (window->priv->stack), window->priv->lock_screen, "lock_screen");
+
+        gtk_widget_show (window->priv->stack);
+        gtk_widget_show (window->priv->lock_screen);
+
+        gtk_container_add (GTK_CONTAINER (window), window->priv->stack);
 
         GtkWidget *grid = gtk_grid_new();
 
@@ -2234,12 +2464,9 @@ gs_window_init (GSWindow *window)
         window->priv->vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
         gtk_widget_show (window->priv->vbox);
         
-        gtk_container_add (GTK_CONTAINER (window), main_box);                
-        
-        gtk_box_pack_start (GTK_BOX (main_box), grid, TRUE, TRUE, 0);
+        gtk_box_pack_start (GTK_BOX (window->priv->lock_screen), grid, TRUE, TRUE, 0);
         gtk_container_set_border_width (GTK_CONTAINER (grid), 6);
 
-        gtk_widget_show (main_box);
                                 
         gtk_widget_set_valign (window->priv->vbox, GTK_ALIGN_CENTER);
         gtk_widget_set_halign (window->priv->vbox, GTK_ALIGN_CENTER);
@@ -2276,12 +2503,10 @@ gs_window_init (GSWindow *window)
         
         g_signal_connect (window->priv->settings, "changed", G_CALLBACK (settings_changed_cb), window);
 
-        g_signal_connect (main_box, "draw", G_CALLBACK (shade_background), window);
+        g_signal_connect (window->priv->lock_screen, "draw", G_CALLBACK (shade_background), window);
 
-        create_info_bar (window);       
+        create_info_bar (window);
 }
-
-
 
 static void
 remove_command_watches (GSWindow *window)
@@ -2293,6 +2518,10 @@ remove_command_watches (GSWindow *window)
         if (window->priv->keyboard_watch_id != 0) {
                 g_source_remove (window->priv->keyboard_watch_id);
                 window->priv->keyboard_watch_id = 0;
+        }
+        if (window->priv->screensaver_watch_id != 0) {
+                g_source_remove (window->priv->screensaver_watch_id);
+                window->priv->screensaver_watch_id = 0;
         }
 }
 
