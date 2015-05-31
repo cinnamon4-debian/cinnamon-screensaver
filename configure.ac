@@ -2,7 +2,7 @@ dnl -*- mode: m4 -*-
 
 AC_PREREQ(2.60)
 AC_INIT([cinnamon-screensaver],
-        [2.6.0],
+        [2.6.2],
         [https://github.com/linuxmint/cinnamon-screensaver/issues])
 
 AC_CONFIG_SRCDIR(src/cinnamon-screensaver.c)
@@ -42,7 +42,7 @@ DBUS_REQUIRED_VERSION=0.78
 GLIB_REQUIRED_VERSION=2.37.3
 GTK_REQUIRED_VERSION=3.1.4
 X11_REQUIRED_VERSION=1.0
-CINNAMON_DESKTOP_REQUIRED_VERSION=2.4.0
+CINNAMON_DESKTOP_REQUIRED_VERSION=2.6.3
 LIBGNOMEKBDUI_REQUIRED_VERSION=3.6.0
 
 AC_CHECK_HEADERS(unistd.h)
