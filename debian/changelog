@@ -1,6 +1,7 @@
 cinnamon-screensaver (2.6.4-1~) UNRELEASED; urgency=medium
 
   * New upstream release.
+  * Build against libwebkit2gtk-4.0-dev. (Closes: #790705, #790713)
 
  -- Fabio Fantoni <fantonifabio@tiscali.it>  Sat, 27 Jun 2015 18:24:43 +0200
 
@@ -18,8 +19,6 @@ cinnamon-screensaver (2.4.2-1) experimental; urgency=medium
 
   [ Fabio Fantoni ]
   * New upstream release.
-
-  [ Maximiliano Curia ]
 
  -- Maximiliano Curia <maxy@debian.org>  Tue, 21 Apr 2015 23:18:12 +0200
 
