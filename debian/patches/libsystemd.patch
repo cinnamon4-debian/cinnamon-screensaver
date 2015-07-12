@@ -1,0 +1,13 @@
+diff --git a/configure.ac b/configure.ac
+index 4090b01..850de59 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -581,7 +581,7 @@ dnl ---------------------------------------------------------------------------
+ dnl logind support
+ dnl ---------------------------------------------------------------------------
+ 
+-PKG_CHECK_MODULES(LOGIND, [libsystemd-login], [have_logind=yes], [have_logind=no])
++PKG_CHECK_MODULES(LOGIND, [libsystemd], [have_logind=yes], [have_logind=no])
+ 
+ if test x$have_logind = xyes ; then
+         AC_DEFINE(HAVE_LOGIND, 1, [logind support])
