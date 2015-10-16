@@ -180,7 +180,7 @@ set_invisible_cursor (GdkWindow *window,
         gdk_window_set_cursor (window, cursor);
 
         if (cursor) {
-                gdk_cursor_unref (cursor);
+                g_object_unref (cursor);
         }
 }
 
@@ -631,6 +631,14 @@ window_select_shape_events (GSWindow *window)
 #endif
 }
 
+static gboolean
+on_screensaver_plug_removed (GtkSocket *socket, GSWindow *window)
+{
+    gtk_widget_hide (GTK_WIDGET (socket));
+    window->priv->screensaver = NULL;
+    return FALSE;
+}
+
 static void
 create_screensaver_socket (GSWindow *window,
                            guint32   id)
@@ -639,6 +647,10 @@ create_screensaver_socket (GSWindow *window,
 
   gtk_stack_add_named (GTK_STACK (window->priv->stack), window->priv->screensaver, "screensaver");
   gtk_widget_show (window->priv->screensaver);
+
+  g_signal_connect (window->priv->screensaver, "plug-removed",
+                    G_CALLBACK (on_screensaver_plug_removed), window);
+
   gtk_socket_add_id (GTK_SOCKET (window->priv->screensaver), id);
   gs_window_show_screensaver (window);
 }
@@ -895,6 +907,8 @@ gs_window_destroy (GSWindow *window)
         g_return_if_fail (GS_IS_WINDOW (window));
 
         gs_window_cancel_unlock_request (window);
+
+        screensaver_command_finish (window);
 
         gtk_widget_destroy (GTK_WIDGET (window));
 }
@@ -2577,7 +2591,6 @@ gs_window_finalize (GObject *object)
 
         remove_command_watches (window);
 
-        screensaver_command_finish (window);
         gs_window_dialog_finish (window);
 
         if (window->priv->background_surface) {
