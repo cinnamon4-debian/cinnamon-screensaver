@@ -2,7 +2,7 @@ dnl -*- mode: m4 -*-
 
 AC_PREREQ(2.60)
 AC_INIT([cinnamon-screensaver],
-        [2.8.0],
+        [3.0.0],
         [https://github.com/linuxmint/cinnamon-screensaver/issues])
 
 AC_CONFIG_SRCDIR(src/cinnamon-screensaver.c)
@@ -15,7 +15,6 @@ AC_CONFIG_HEADERS(config.h)
 AM_MAINTAINER_MODE([enable])
 
 IT_PROG_INTLTOOL([0.35.0])
-AC_ISC_POSIX
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_STDC_HEADERS
@@ -124,7 +123,7 @@ if test "z$DBUS_VERSION_MAJOR" = "z0" -a "z$DBUS_VERSION_MINOR" = "z0" -a "z$DBU
         exit 1
 else
 
-        echo "Your dbus version is $DBUS_VERSION_MAJOR,$DBUS_VERSION_MINOR,$DBUS_VERSION_MICRO."
+        echo "Your dbus version is $DBUS_VERSION_MAJOR.$DBUS_VERSION_MINOR.$DBUS_VERSION_MICRO."
         DBUS_CFLAGS="$DBUS_CFLAGS -DDBUS_VERSION_MAJOR=$DBUS_VERSION_MAJOR"
         DBUS_CFLAGS="$DBUS_CFLAGS -DDBUS_VERSION_MINOR=$DBUS_VERSION_MINOR"
         DBUS_CFLAGS="$DBUS_CFLAGS -DDBUS_VERSION_MICRO=$DBUS_VERSION_MICRO"
@@ -581,7 +580,9 @@ dnl ---------------------------------------------------------------------------
 dnl logind support
 dnl ---------------------------------------------------------------------------
 
-PKG_CHECK_MODULES(LOGIND, [libsystemd-login], [have_logind=yes], [have_logind=no])
+PKG_CHECK_MODULES(LOGIND, [libsystemd-login], [have_logind=yes], [
+	PKG_CHECK_MODULES(LOGIND, [libsystemd], [have_logind=yes], [have_logind=no])
+])
 
 if test x$have_logind = xyes ; then
         AC_DEFINE(HAVE_LOGIND, 1, [logind support])
