@@ -1,3 +1,9 @@
+cinnamon-screensaver (3.0.0-1~) UNRELEASED; urgency=medium
+
+  * New upstream release (3.0.0).
+
+ -- Maximiliano Curia <maxy@debian.org>  Thu, 05 May 2016 08:05:36 +0200
+
 cinnamon-screensaver (2.8.0-1) unstable; urgency=medium
 
   * New upstream release (2.8.0).
