@@ -27,7 +27,7 @@ Build-Depends: debhelper (>= 9),
                x11proto-scrnsaver-dev,
                x11proto-xext-dev,
                x11proto-xf86vidmode-dev
-Standards-Version: 3.9.6
+Standards-Version: 3.9.8
 Homepage: http://cinnamon.linuxmint.com/
 Vcs-Browser: https://anonscm.debian.org/git/pkg-cinnamon/cinnamon-screensaver.git
 Vcs-Git: https://anonscm.debian.org/git/pkg-cinnamon/cinnamon-screensaver.git
