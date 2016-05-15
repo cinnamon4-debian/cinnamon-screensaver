@@ -1,8 +1,12 @@
-cinnamon-screensaver (3.0.0-1~) UNRELEASED; urgency=medium
+cinnamon-screensaver (3.0.0-1) unstable; urgency=medium
 
   * New upstream release (3.0.0).
+  * debian/control: Update Vcs-Browser and Vcs-Git fields
+  * Add a .gitattributes file to use dpkg-mergechangelogs
+  * Bump Standards-Version to 3.9.8
+  * Drop upstream applied patch
 
- -- Maximiliano Curia <maxy@debian.org>  Thu, 05 May 2016 08:05:36 +0200
+ -- Maximiliano Curia <maxy@debian.org>  Sun, 15 May 2016 10:07:52 +0200
 
 cinnamon-screensaver (2.8.0-1) unstable; urgency=medium
 
