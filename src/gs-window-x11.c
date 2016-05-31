@@ -34,6 +34,7 @@
 
 #include "gnome-wall-clock.h"
 
+#include "gs-lock-socket.h"
 #include "gs-window.h"
 #include "gs-marshal.h"
 #include "subprocs.h"
@@ -232,35 +233,6 @@ gs_window_set_background_surface (GSWindow        *window,
                 window->priv->background_surface = cairo_surface_reference (surface);
                 gs_window_reset_background_surface (window);
         }
-}
-
-static void
-gs_window_clear_to_background_surface (GSWindow *window)
-{
-        g_return_if_fail (GS_IS_WINDOW (window));
-
-        if (!gtk_widget_get_visible (GTK_WIDGET (window))) {
-                return;
-        }
-
-        if (window->priv->background_surface == NULL) {
-                return;
-        }
-
-        gs_debug ("Clearing window to background pixmap");
-        gs_window_reset_background_surface (window);
-}
-
-static void
-clear_widget (GtkWidget *widget)
-{
-        GdkRGBA rgba = { 0.0, 0.0, 0.0, 1.0 };
-
-        if (!gtk_widget_get_realized (widget))
-                return;
-
-        gtk_widget_override_background_color (widget, GTK_STATE_FLAG_NORMAL, &rgba);
-        gtk_widget_queue_draw (GTK_WIDGET (widget));
 }
 
 static cairo_region_t *
@@ -1339,7 +1311,7 @@ static void
 create_lock_socket (GSWindow *window,
                     guint32   id)
 {
-        window->priv->lock_socket = gtk_socket_new ();
+        window->priv->lock_socket = GTK_WIDGET (gs_lock_socket_new ());
         window->priv->lock_box = gtk_alignment_new (0.5, 0.5, 0, 0);
         gtk_widget_show (window->priv->lock_box);
 
@@ -2401,13 +2373,6 @@ shade_background (GtkWidget    *widget,
         cairo_set_source_rgba (cr, 0.0, 0.0, 0.0, 0.7);
         cairo_paint (cr);
         return FALSE;
-}
-
-static void
-on_realized (GtkWidget *widget, GSWindow *window)
-{
-    gs_window_clear_to_background_surface (window);
-    gtk_widget_queue_draw (widget);
 }
 
 void
