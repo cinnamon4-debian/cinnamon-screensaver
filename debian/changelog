@@ -1,6 +1,11 @@
 cinnamon-screensaver (3.0.1-1~) UNRELEASED; urgency=medium
 
+  [ Margarita Manterola ]
   * New upstream release.
+
+  [ Maximiliano Curia ]
+  * Add new patch: Migrate-away-from-gnome-common-deprecated-vars-and-
+    macros.patch
 
  -- Margarita Manterola <marga@debian.org>  Tue, 31 May 2016 19:41:38 +0200
 
