@@ -1,4 +1,4 @@
-cinnamon-screensaver (3.0.1-1~) UNRELEASED; urgency=medium
+cinnamon-screensaver (3.0.1-1) unstable; urgency=medium
 
   [ Margarita Manterola ]
   * New upstream release.
@@ -7,7 +7,7 @@ cinnamon-screensaver (3.0.1-1~) UNRELEASED; urgency=medium
   * Add new patch: Migrate-away-from-gnome-common-deprecated-vars-and-
     macros.patch
 
- -- Margarita Manterola <marga@debian.org>  Tue, 31 May 2016 19:41:38 +0200
+ -- Maximiliano Curia <maxy@debian.org>  Wed, 03 Aug 2016 18:30:26 +0200
 
 cinnamon-screensaver (3.0.0-1) unstable; urgency=medium
 
