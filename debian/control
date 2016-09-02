@@ -39,7 +39,6 @@ Pre-Depends: ${misc:Pre-Depends}
 Depends: cinnamon-desktop-data (>= 2.6.3),
          dbus-x11,
          gir1.2-webkit2-4.0,
-         gnome-icon-theme (>= 2.15.90),
          python,
          ${misc:Depends},
          ${python:Depends},
