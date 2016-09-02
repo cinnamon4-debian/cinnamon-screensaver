@@ -1,3 +1,11 @@
+cinnamon-screensaver (3.0.1-2~1.gbp57ca4b) UNRELEASED; urgency=medium
+
+  ** SNAPSHOT build @57ca4b3a8d9218739f343c9c431c90e07412bc7d **
+
+  * Drop gnome-icon-theme dependency
+
+ -- Maximiliano Curia <maxy@gnuservers.com.ar>  Fri, 02 Sep 2016 12:00:33 +0200
+
 cinnamon-screensaver (3.0.1-1) unstable; urgency=medium
 
   [ Margarita Manterola ]
