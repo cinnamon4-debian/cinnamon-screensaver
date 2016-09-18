@@ -1,0 +1,47 @@
+From: Maximiliano Curia <maxy@gnuservers.com.ar>
+Date: Sun, 18 Sep 2016 09:51:46 +0200
+Subject: Make AX_ macros optional and drop unused parts
+
+Not all AX_ macros are available in previous versions of
+autoconf-archive, making them optional allows backports.
+---
+ autogen.sh   | 2 --
+ configure.ac | 5 +++--
+ 2 files changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/autogen.sh b/autogen.sh
+index 51988b5..be709bd 100755
+--- a/autogen.sh
++++ b/autogen.sh
+@@ -23,8 +23,6 @@ if [ "$#" = 0 -a "x$NOCONFIGURE" = "x" ]; then
+ fi
+ 
+ aclocal --install || exit 1
+-glib-gettextize --force --copy || exit 1
+-gtkdocize --copy || exit 1
+ intltoolize --force --copy --automake || exit 1
+ autoreconf --verbose --force --install || exit 1
+ 
+diff --git a/configure.ac b/configure.ac
+index a652221..5793fbf 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -8,7 +8,7 @@ AC_INIT([cinnamon-screensaver],
+ AC_CONFIG_MACRO_DIR([m4])
+ AC_SUBST([ACLOCAL_AMFLAGS], ["-I $ac_macro_dir \${ACLOCAL_FLAGS}"])
+ 
+-AX_IS_RELEASE([git-directory])
++m4_ifdef([AX_IS_RELEASE], [AX_IS_RELEASE([git-directory])])
+ 
+ AC_CONFIG_SRCDIR(src/cinnamon-screensaver.c)
+ 
+@@ -92,7 +92,8 @@ SAVER_LIBS="$ALL_X_LIBS"
+ 
+ AC_PATH_PROG(GLIB_GENMARSHAL, glib-genmarshal)
+ 
+-AX_COMPILER_FLAGS([WARN_CFLAGS],[WARN_LDFLAGS])
++m4_ifdef([AX_COMPILER_FLAGS],
++         [AX_COMPILER_FLAGS([WARN_CFLAGS],[WARN_LDFLAGS])])
+ 
+ # Optional dependencies for the theme engines
+ 
