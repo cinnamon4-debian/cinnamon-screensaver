@@ -6,6 +6,9 @@ DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 %:
 	dh $@ --parallel --with=autoreconf,gnome,python2
 
+override_dh_autoreconf:
+	NOCONFIGURE=1 dh_autoreconf --as-needed ./autogen.sh
+
 override_dh_gnome_clean:
 	dh_gnome_clean --no-control
 
