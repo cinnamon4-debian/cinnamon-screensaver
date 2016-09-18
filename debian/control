@@ -37,7 +37,7 @@ Package: cinnamon-screensaver
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Depends: cinnamon-desktop-data (>= 2.6.3),
-         dbus-x11,
+         default-dbus-session-bus | dbus-session-bus,
          gir1.2-webkit2-4.0,
          python,
          ${misc:Depends},
