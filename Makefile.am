@@ -2,6 +2,8 @@
 
 AUTOMAKE_OPTIONS = 1.7
 
+DISTCHECK_CONFIGURE_FLAGS = --enable-introspection
+
 NULL =
 
 SUBDIRS =			\
@@ -9,6 +11,8 @@ SUBDIRS =			\
 	po 			\
 	data			\
     files       \
+    libcscreensaver \
+    screensavers \
 	$(NULL)
 
 EXTRA_DIST =			\
