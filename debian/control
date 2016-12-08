@@ -46,8 +46,8 @@ Depends:
  python3-gi-cairo,
  python3-xlib,
  ${misc:Depends},
- ${python:Depends},
  ${python3:Depends},
+ ${python:Depends},
  ${shlibs:Depends},
 Recommends: cinnamon-screensaver-x-plugin
 Suggests: cinnamon-screensaver-webkit-plugin
@@ -83,7 +83,7 @@ Section: libs
 Architecture: any
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
-Depends: ${misc:Depends}, ${shlibs:Depends}
+Depends: ${gir:Depends}, ${misc:Depends}, ${shlibs:Depends}
 Description: library and introspection data used by cinnamon-screensaver
  cinnamon-screensaver is a screen saver and locker that aims to have simple,
  sane and secure defaults, and be well integrated with the Cinnamon desktop.
