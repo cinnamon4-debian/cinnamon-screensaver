@@ -1,0 +1,24 @@
+Description: Switch to the Debian path for iso flags
+Author: marga@debian.org
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+Index: cinnamon-screensaver/src/passwordEntry.py
+===================================================================
+--- cinnamon-screensaver.orig/src/passwordEntry.py	2016-11-19 08:27:33.182996932 -0300
++++ cinnamon-screensaver/src/passwordEntry.py	2016-12-08 16:21:03.740038771 -0300
+@@ -59,7 +59,7 @@
+             name = self.keyboard_controller.get_current_icon_name()
+ 
+             if name:
+-                filename = "/usr/share/iso-flag-png/%s.png" % name
++                filename = "/usr/share/iso-flags-png-320x240/%s.png" % name
+ 
+                 try:
+                     pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(filename, -1, height)
+@@ -216,4 +216,4 @@
+         Gtk.Widget.grab_focus(self)
+ 
+         length = self.get_buffer().get_length()
+-        self.select_region(length, -1)
+\ No newline at end of file
++        self.select_region(length, -1)
