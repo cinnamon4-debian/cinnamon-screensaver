@@ -47,6 +47,7 @@ Depends:
  python3-xlib,
  ${misc:Depends},
  ${python:Depends},
+ ${python3:Depends},
  ${shlibs:Depends},
 Recommends: cinnamon-screensaver-x-plugin
 Suggests: cinnamon-screensaver-webkit-plugin
