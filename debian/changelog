@@ -1,4 +1,4 @@
-cinnamon-screensaver (3.2.6-1) UNRELEASED; urgency=medium
+cinnamon-screensaver (3.2.6-1~) UNRELEASED; urgency=medium
 
   [ Maximiliano Curia ]
   * Drop gnome-icon-theme dependency
