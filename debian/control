@@ -13,7 +13,6 @@ Build-Depends:
  dh-python,
  gnome-pkg-tools (>= 0.10),
  gobject-introspection,
- intltool,
  intltool (>= 0.40.0),
  libdbus-1-dev,
  libgirepository1.0-dev,
@@ -23,6 +22,7 @@ Build-Depends:
  libxext-dev,
  python,
  python-rsvg,
+ python3:any,
 Standards-Version: 3.9.8
 Homepage: http://cinnamon.linuxmint.com/
 Vcs-Browser: https://anonscm.debian.org/git/pkg-cinnamon/cinnamon-screensaver.git
@@ -58,7 +58,13 @@ Description: Cinnamon screen saver and locker
 Package: cinnamon-screensaver-x-plugin
 Architecture: all
 Pre-Depends: ${misc:Pre-Depends}
-Depends: cinnamon-screensaver (>= 3.1.0), xscreensaver-data
+Depends:
+ cinnamon-screensaver (>= 3.1.0),
+ python3,
+ xscreensaver-data,
+ ${misc:Depends},
+ ${python3:Depends},
+ ${python:Depends},
 Recommends: xscreensaver-data-extra, xscreensaver-gl, xscreensaver-gl-extra
 Description: XScreensaver plugin for cinnamon-screensaver
  cinnamon-screensaver is a screen saver and locker that aims to have simple,
@@ -72,6 +78,10 @@ Pre-Depends: ${misc:Pre-Depends}
 Depends:
  cinnamon-screensaver (>= 3.1.0),
  gir1.2-webkit2-4.0 | gir1.2-webkit2-3.0,
+ python3,
+ ${misc:Depends},
+ ${python3:Depends},
+ ${python:Depends},
 Description: Webkit plugin for cinnamon-screensaver
  cinnamon-screensaver is a screen saver and locker that aims to have simple,
  sane and secure defaults, and be well integrated with the Cinnamon desktop.
