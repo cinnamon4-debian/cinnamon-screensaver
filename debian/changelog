@@ -3,12 +3,12 @@ cinnamon-screensaver (3.2.6-1~) UNRELEASED; urgency=medium
   [ Maximiliano Curia ]
   * Drop gnome-icon-theme dependency
   * Drop gnome-common build dependency
-  * Add new patch: Make-AX_-macros-optional-and-drop-unused-parts.patch
-  * Switch to default-dbus-session-bus | dbus-session-bus.
+  * Drop dbus dependency, not used anymore.
     Thanks to Simon McVittie for the report (Closes: 835842)
 
   [ Margarita Manterola ]
   * New upstream release.
+  * Remove obsolete patches applied upstream.
 
  -- Margarita Manterola <marga@debian.org>  Thu, 08 Dec 2016 13:53:55 -0300
 
