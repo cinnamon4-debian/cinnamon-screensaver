@@ -6,7 +6,6 @@ Uploaders:
  Maximiliano Curia <maxy@debian.org>,
  Margarita Manterola <marga@debian.org>,
  Fabio Fantoni <fantonifabio@tiscali.it>,
- ,
 Build-Depends:
  autoconf-archive,
  debhelper (>= 9),
