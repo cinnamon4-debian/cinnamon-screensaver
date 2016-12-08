@@ -1,0 +1,8 @@
+/usr/bin/cinnamon-screensaver
+/usr/bin/cinnamon-screensaver-command
+/usr/share/applications/cinnamon-screensaver.desktop
+/usr/share/cinnamon-screensaver/*.css
+/usr/share/cinnamon-screensaver/*.py
+/usr/share/cinnamon-screensaver/*/*.py
+/usr/share/dbus-1
+/usr/share/icons
