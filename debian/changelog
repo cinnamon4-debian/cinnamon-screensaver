@@ -1,6 +1,7 @@
 cinnamon-screensaver (3.2.9-1~) UNRELEASED; urgency=medium
 
   * New upstream release (3.2.9).
+  * Refresh patches
 
  -- Maximiliano Curia <maxy@debian.org>  Fri, 16 Dec 2016 22:26:06 +0100
 
