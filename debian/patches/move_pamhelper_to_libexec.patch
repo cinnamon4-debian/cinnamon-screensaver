@@ -1,0 +1,22 @@
+--- a/src/pamhelper/Makefile.am
++++ b/src/pamhelper/Makefile.am
+@@ -5,7 +5,7 @@
+ 
+ SUBDIRS =
+ 
+-pamhelperdir = $(datadir)/cinnamon-screensaver/pamhelper
++pamhelperdir = $(libexecdir)/pamhelper
+ 
+ pamhelper_PYTHON = \
+     authClient.py \
+--- a/src/pamhelper/authClient.py
++++ b/src/pamhelper/authClient.py
+@@ -35,7 +35,7 @@
+             return True
+ 
+         try:
+-            path = os.path.join(config.pkgdatadir, "pamhelper", "cinnamon-screensaver-pam-helper")
++            path = os.path.join(config.libexecdir, "pamhelper", "cinnamon-screensaver-pam-helper")
+ 
+             if status.Debug:
+                 argv = (path, "--debug", None)
