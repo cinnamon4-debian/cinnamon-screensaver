@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 
-from gi.repository import Gtk, Gdk, CScreensaver
+from gi.repository import Gtk, Gdk, CScreensaver, GObject
 import random
 
 import status
@@ -75,6 +75,9 @@ class Stage(Gtk.Window):
                         Gdk.EventMask.LEAVE_NOTIFY_MASK |
                         Gdk.EventMask.FOCUS_CHANGE_MASK)
 
+        c = Gdk.RGBA(0, 0, 0, 0)
+        self.override_background_color (Gtk.StateFlags.NORMAL, c);
+
         self.update_geometry()
         self.set_opacity(0.0)
 
@@ -109,6 +112,10 @@ class Stage(Gtk.Window):
                                            "size-changed",
                                            self.on_screen_changed)
 
+        trackers.con_tracker_get().connect(self,
+                                           "grab-broken-event",
+                                           self.on_grab_broken_event)
+
     def on_screen_changed(self, screen, data=None):
         self.update_geometry()
         self.size_to_screen()
@@ -117,6 +124,12 @@ class Stage(Gtk.Window):
             monitor.update_geometry()
 
         self.overlay.queue_resize()
+
+    def on_grab_broken_event(self, widget, event, data=None):
+        print("grab broken")
+        GObject.idle_add(self.manager.grab_stage)
+
+        return False
 
     def transition_in(self, effect_time, callback):
         """
@@ -186,6 +199,10 @@ class Stage(Gtk.Window):
         trackers.con_tracker_get().disconnect(self.power_client,
                                               "power-state-changed",
                                               self.on_power_state_changed)
+
+        trackers.con_tracker_get().disconnect(self,
+                                              "grab-broken-event",
+                                              self.on_grab_broken_event)
 
         self.set_timeout_active(None, False)
 
@@ -336,6 +353,7 @@ class Stage(Gtk.Window):
         dialog.)
         """
         self.unlock_dialog = UnlockDialog()
+        self.set_default(self.unlock_dialog.auth_unlock_button)
         self.add_child_widget(self.unlock_dialog)
 
         # Prevent a dialog timeout during authentication
@@ -348,11 +366,14 @@ class Stage(Gtk.Window):
 
         # Respond to authentication success/failure
         trackers.con_tracker_get().connect(self.unlock_dialog,
-                                           "auth-success",
+                                           "authenticate-success",
                                            self.authentication_result_callback, True)
         trackers.con_tracker_get().connect(self.unlock_dialog,
-                                           "auth-failure",
+                                           "authenticate-failure",
                                            self.authentication_result_callback, False)
+        trackers.con_tracker_get().connect(self.unlock_dialog,
+                                           "authenticate-cancel",
+                                           self.authentication_cancel_callback)
 
     def setup_status_bars(self):
         """
@@ -422,11 +443,17 @@ class Stage(Gtk.Window):
         else:
             self.unlock_dialog.blink()
 
+    def authentication_cancel_callback(self, dialog):
+        self.cancel_unlock_widget()
+
     def set_message(self, msg):
         """
         Passes along an away-message to the clock.
         """
         self.clock_widget.set_message(msg)
+
+    def initialize_pam(self):
+        return self.unlock_dialog.initialize_auth_client()
 
     def raise_unlock_widget(self):
         """
@@ -467,6 +494,9 @@ class Stage(Gtk.Window):
         self.unlock_dialog.reveal()
         self.audio_panel.reveal()
         self.info_panel.update_revealed()
+
+    def cancel_unlocking(self):
+        self.unlock_dialog.cancel_auth_client()
 
     def cancel_unlock_widget(self):
         """
@@ -656,8 +686,8 @@ class Stage(Gtk.Window):
             allocation.width = nat_rect.width
             allocation.height = nat_rect.height
 
-            allocation.x = monitor_rect.x + (monitor_rect.width / 2) - (nat_rect.width / 2)
-            allocation.y = monitor_rect.y + (monitor_rect.height / 2) - (nat_rect.height / 2)
+            allocation.x = monitor_rect.x + (monitor_rect.width / 2) - (allocation.width / 2)
+            allocation.y = monitor_rect.y + (monitor_rect.height / 2) - (allocation.height / 2)
 
             return True
 
@@ -673,76 +703,77 @@ class Stage(Gtk.Window):
             """
             min_rect, nat_rect = child.get_preferred_size()
 
-            current_monitor = child.current_monitor
+            if status.Awake:
+                current_monitor = utils.get_mouse_monitor()
+            else:
+                current_monitor = child.current_monitor
+
+            monitor_rect = self.screen.get_monitor_geometry(current_monitor)
+
+            region_w = monitor_rect.width / 3
+            region_h = monitor_rect.height / 3
 
             if status.Awake:
                 """
                 If we're Awake, force the clock to track to the active monitor, and be aligned to
                 the left-center.  The albumart widget aligns right-center.
                 """
+                unlock_mw, unlock_nw = self.unlock_dialog.get_preferred_width()
+                region_w = (monitor_rect.width - unlock_nw) / 2
+
                 if isinstance(child, ClockWidget):
                     child.set_halign(Gtk.Align.START)
                 else:
                     child.set_halign(Gtk.Align.END)
+
                 child.set_valign(Gtk.Align.CENTER)
-                current_monitor = utils.get_mouse_monitor()
             else:
-                for floater in self.floaters:
-                    """
-                    Don't let our floating widgets end up in the same spot.
-                    """
-                    if floater is child:
-                        continue
-                    if floater.get_halign() != child.get_halign() and floater.get_valign() != child.get_valign():
-                        continue
+                if settings.get_allow_floating():
+                    for floater in self.floaters:
+                        """
+                        Don't let our floating widgets end up in the same spot.
+                        """
+                        if floater is child:
+                            continue
+                        if floater.get_halign() != child.get_halign() and floater.get_valign() != child.get_valign():
+                            continue
 
-                    fa = floater.get_halign()
-                    ca = child.get_halign()
-                    while fa == ca:
-                        ca = ALIGNMENTS[random.randint(0, 2)]
-                    child.set_halign(ca)
+                        fa = floater.get_halign()
+                        ca = child.get_halign()
+                        while fa == ca:
+                            ca = ALIGNMENTS[random.randint(0, 2)]
+                        child.set_halign(ca)
 
-                    fa = floater.get_valign()
-                    ca = child.get_valign()
-                    while fa == ca:
-                        ca = ALIGNMENTS[random.randint(0, 2)]
-                    child.set_valign(ca)
+                        fa = floater.get_valign()
+                        ca = child.get_valign()
+                        while fa == ca:
+                            ca = ALIGNMENTS[random.randint(0, 2)]
+                        child.set_valign(ca)
 
-            monitor_rect = self.screen.get_monitor_geometry(current_monitor)
+            # Restrict the widget size to 1/3 width and height of the current monitor
+            allocation.width = min(nat_rect.width, region_w)
+            allocation.height = min(nat_rect.height, region_h)
 
-            allocation.width = nat_rect.width
-            allocation.height = nat_rect.height
+            # Calculate padding required to center widgets within their particular 1/9th of the monitor
+            padding_left = padding_right = (region_w - allocation.width) / 2
+            padding_top = padding_bottom = (region_h - allocation.height) / 2
 
             halign = child.get_halign()
             valign = child.get_valign()
 
             if halign == Gtk.Align.START:
-                allocation.x = monitor_rect.x
+                allocation.x = monitor_rect.x + padding_left
             elif halign == Gtk.Align.CENTER:
-                allocation.x = monitor_rect.x + (monitor_rect.width / 2) - (nat_rect.width / 2)
+                allocation.x = monitor_rect.x + (monitor_rect.width / 2) - (allocation.width / 2)
             elif halign == Gtk.Align.END:
-                allocation.x = monitor_rect.x + monitor_rect.width - nat_rect.width
+                allocation.x = monitor_rect.x + monitor_rect.width - allocation.width - padding_right
 
             if valign == Gtk.Align.START:
-                allocation.y = monitor_rect.y
+                allocation.y = monitor_rect.y + padding_top
             elif valign == Gtk.Align.CENTER:
-                allocation.y = monitor_rect.y + (monitor_rect.height / 2) - (nat_rect.height / 2)
+                allocation.y = monitor_rect.y + (monitor_rect.height / 2) - (allocation.height / 2)
             elif valign == Gtk.Align.END:
-                allocation.y = monitor_rect.y + monitor_rect.height - nat_rect.height
-
-            # Earlier gtk versions don't appear to include css padding in their preferred-size calculation
-            # This is true at least in 3.14 (Betsy/Jessir - is 3.16 relevant anywhere?)
-            if not utils.have_gtk_version("3.18.0"):
-                padding = child.get_style_context().get_padding(Gtk.StateFlags.NORMAL)
-                if halign == Gtk.Align.START:
-                    allocation.x += padding.left
-                elif halign == Gtk.Align.END:
-                    allocation.x -= padding.right
-
-                if valign == Gtk.Align.START:
-                    allocation.y += padding.top
-                elif valign == Gtk.Align.END:
-                    allocation.y -= padding.bottom
+                allocation.y = monitor_rect.y + monitor_rect.height - allocation.height - padding_bottom
 
             return True
 
