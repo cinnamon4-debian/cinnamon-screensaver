@@ -1,14 +1,18 @@
 --- a/src/pamhelper/Makefile.am
 +++ b/src/pamhelper/Makefile.am
-@@ -5,7 +5,7 @@
+@@ -5,9 +5,10 @@
  
  SUBDIRS =
  
 -pamhelperdir = $(datadir)/cinnamon-screensaver/pamhelper
++pamhelperdatadir = $(datadir)/cinnamon-screensaver/pamhelper
 +pamhelperdir = $(libexecdir)/pamhelper
  
- pamhelper_PYTHON = \
+-pamhelper_PYTHON = \
++pamhelperdata_PYTHON = \
      authClient.py \
+     $(NULL)
+ 
 --- a/src/pamhelper/authClient.py
 +++ b/src/pamhelper/authClient.py
 @@ -35,7 +35,7 @@
