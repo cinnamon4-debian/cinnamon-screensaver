@@ -1,3 +1,10 @@
+cinnamon-screensaver (3.2.9-2) experimental; urgency=medium
+
+  * Explicitly depend on automake, as some buildds sometimes pull automaken
+    instead, causing build failures.
+
+ -- Margarita Manterola <marga@debian.org>  Sat, 17 Dec 2016 16:46:37 -0300
+
 cinnamon-screensaver (3.2.9-1) experimental; urgency=medium
 
   * New upstream release (3.2.9).
