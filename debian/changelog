@@ -1,6 +1,6 @@
 cinnamon-screensaver (3.2.9-3~) UNRELEASED; urgency=medium
 
-  * 
+  * Add runtime dependency: python3-setproctitle
 
  -- Maximiliano Curia <maxy@debian.org>  Mon, 19 Dec 2016 14:23:14 +0100
 
