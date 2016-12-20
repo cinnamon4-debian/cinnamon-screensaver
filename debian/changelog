@@ -1,3 +1,9 @@
+cinnamon-screensaver (3.2.9-4) unstable; urgency=medium
+
+  * Release to unstable
+
+ -- Margarita Manterola <marga@debian.org>  Tue, 20 Dec 2016 20:06:32 -0300
+
 cinnamon-screensaver (3.2.9-3) experimental; urgency=medium
 
   * Add runtime dependency: python3-setproctitle
