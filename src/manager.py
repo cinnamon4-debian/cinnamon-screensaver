@@ -174,6 +174,7 @@ class ScreensaverManager(GObject.Object):
         """
         Begin destruction of the stage.
         """
+        self.stage.cancel_unlocking()
         self.stage.transition_out(effect_time, callback)
 
     def on_spawn_stage_complete(self):
