@@ -171,13 +171,14 @@ auth_message_handler (CsAuthMessageStyle style,
                 while (password_ptr == NULL)
                 {
                     gtk_main_iteration_do (FALSE);
+                    usleep (100 * 1000);
                 }
 
                 g_mutex_lock (&password_mutex);
 
                 resp = g_strdup (password_ptr);
 
-                DEBUG ("auth_message_handler processing response string: '%s'\n", resp);
+                DEBUG ("auth_message_handler processing response string\n");
 
                 if (!received_quit (resp))
                 {
