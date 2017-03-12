@@ -25,7 +25,10 @@ import sys
 
 def Main():
     """Main function. Returns exit code."""
-    logging.basicConfig()
+    xerrors = os.path.expanduser("~/.xsession-errors")
+    logformat = ("cinnamon-screensaver-dialog[%(process)d]: %(asctime)s "
+                "%(levelname)-8s %(message)s")
+    logging.basicConfig(level=logging.DEBUG, filename=xerrors, format=logformat)
     logging.info("Start of cinnamon-screensaver-dialog transition script.")
 
     # Check if the parent process is cinnamon-screensaver.
