@@ -2,7 +2,7 @@ cinnamon-screensaver (3.2.13-2) unstable; urgency=medium
 
   * Add debian/cinnamon-screensaver-dialog, a helper script to ease the
     transition from a pre 3.2 screensaver to the 3.2 screensaver. Thanks to
-    Michael Schaller for providing the script.
+    Michael Schaller for providing the script. (Closes: 853064)
 
  -- Margarita Manterola <marga@debian.org>  Sun, 12 Mar 2017 12:24:52 +0100
 
