@@ -24,7 +24,7 @@ Build-Depends:
  libxext-dev,
  python,
  python-rsvg,
- python3:any,
+ python3:any | python3-all:any | python3-dev:any | python3-all-dev:any,
 Standards-Version: 3.9.8
 Homepage: http://cinnamon.linuxmint.com/
 Vcs-Browser: https://anonscm.debian.org/git/pkg-cinnamon/cinnamon-screensaver.git
