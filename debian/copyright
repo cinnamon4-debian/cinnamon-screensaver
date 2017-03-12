@@ -16,6 +16,10 @@ Files: debian/*
 Copyright: 2014-2016, Maximiliano Curia <maxy@debian.org>
 License: LGPL-2+
 
+Files: debian/cinnamon-screensaver-dialog
+Copyright: 2017, Google, Inc
+License: LGPL-2+
+
 Files: libcscreensaver/setuid.c
        libcscreensaver/setuid.h
        libcscreensaver/subprocs.c
