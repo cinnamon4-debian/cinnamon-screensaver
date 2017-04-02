@@ -1,3 +1,4 @@
 change-iso-flag-path.patch
 move_pamhelper_to_libexec.patch
 upstream_fix-textselection.patch
+upstream_fix-suspend-lock.patch
