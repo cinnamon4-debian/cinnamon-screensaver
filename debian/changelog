@@ -1,4 +1,4 @@
-cinnamon-screensaver (3.2.13-3) UNRELEASED; urgency=medium
+cinnamon-screensaver (3.2.13-3) unstable; urgency=medium
 
   * Import upstream's commit f579336 to allow users to select text in the
     password text entry. Mostly used for selecting all text and re-entering the
@@ -7,7 +7,7 @@ cinnamon-screensaver (3.2.13-3) UNRELEASED; urgency=medium
     is started and the screen locked before the machine goes into
     suspend/hibernate.
 
- -- Margarita Manterola <marga@debian.org>  Sat, 01 Apr 2017 18:17:46 +0200
+ -- Margarita Manterola <marga@debian.org>  Sun, 02 Apr 2017 13:24:49 +0200
 
 cinnamon-screensaver (3.2.13-2) unstable; urgency=medium
 
