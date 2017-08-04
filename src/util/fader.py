@@ -1,4 +1,4 @@
-#! /usr/bin/python3
+#!/usr/bin/python3
 
 from gi.repository import GLib, GObject
 
@@ -12,6 +12,9 @@ class Fader:
         self.widget = widget
         self.finished_cb = None
 
+        self.repositioned = False
+
+        self.starting_opacity = 0.0
         self.current_opacity = 0.0
         self.target_opacity = 0.0
 
@@ -20,8 +23,8 @@ class Fader:
         self.start_time = 0
         self.end_time = 0
 
-    def fade_in(self, ms, finished_cb=None):
-        GObject.idle_add(self._fade_in_idle, ms, finished_cb)
+    def fade_in(self, ms, reposition_cb=None, finished_cb=None):
+        GObject.idle_add(self._fade_in_idle, ms, reposition_cb, finished_cb)
 
     def fade_out(self, ms, finished_cb=None):
         GObject.idle_add(self._fade_out_idle, ms, finished_cb)
@@ -31,13 +34,11 @@ class Fader:
             self.widget.remove_tick_callback(self.tick_id)
             self.tick_id = 0
 
-    def _fade_in_idle(self, ms, finished_cb=None):
+    def _fade_in_idle(self, ms, reposition_cb=None, finished_cb=None):
         self.finished_cb = finished_cb
-        self.current_opacity = self.widget.get_opacity()
+        self.reposition_cb = reposition_cb
+        self.current_opacity = self.starting_opacity = self.widget.get_opacity()
         self.target_opacity = 1.0
-
-        if not self.widget.get_visible():
-            self.widget.set_visible(True)
 
         if self.widget.get_mapped():
             self.start_time = self.widget.get_frame_clock().get_frame_time()
@@ -52,7 +53,7 @@ class Fader:
 
     def _fade_out_idle(self, ms, finished_cb=None):
         self.finished_cb = finished_cb
-        self.current_opacity = self.widget.get_opacity()
+        self.current_opacity = self.starting_opacity = self.widget.get_opacity()
         self.target_opacity = 0.0
 
         if self.widget.get_mapped():
@@ -71,6 +72,10 @@ class Fader:
 
         self._fade_in_step(now)
 
+        if not self.repositioned and self.current_opacity > .03:
+            self.repositioned = True
+            self.reposition_cb()
+
         if self.current_opacity == self.target_opacity:
             self.tick_id = 0
             self.finished_cb()
@@ -80,14 +85,13 @@ class Fader:
 
     def _fade_in_step(self, now):
         if now < self.end_time:
-            t = (now - self.start_time) / (self.end_time - self.start_time)
+            t = ((now - self.start_time) / (self.end_time - self.start_time) * self.target_opacity)
         else:
-            t = 1.0
+            t = self.target_opacity
 
         self.current_opacity = t
 
         self.widget.set_opacity(self.current_opacity)
-        self.widget.queue_draw()
 
     def _on_frame_tick_fade_out(self, widget, clock, data=None):
         now = clock.get_frame_time()
@@ -103,11 +107,10 @@ class Fader:
 
     def _fade_out_step(self, now):
         if now < self.end_time:
-            t = 1.0 - ((now - self.start_time) / (self.end_time - self.start_time))
+            t = self.starting_opacity - (((now - self.start_time) / (self.end_time - self.start_time)) * self.starting_opacity)
         else:
-            t = 0.0
+            t = self.target_opacity
 
         self.current_opacity = t
 
         self.widget.set_opacity(self.current_opacity)
-        self.widget.queue_draw()

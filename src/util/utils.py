@@ -1,9 +1,10 @@
-#! /usr/bin/python3
+#!/usr/bin/python3
 
 from gi.repository import GLib, Gio, Gdk, Gtk
 import os
 import grp
 import subprocess
+import xapp.os
 
 import config
 import status
@@ -68,6 +69,10 @@ def user_can_lock():
     except KeyError:
         pass
 
+    # Don't lock the screensaver in guest or live sessions
+    if xapp.os.is_live_session() or xapp.os.is_guest_session():
+        return False
+
     return True
 
 def process_is_running(name):
@@ -125,17 +130,6 @@ def override_user_time(window):
 
 def debug_allocation(alloc):
     print("x:%d, y:%d, width:%d, height:%d" % (alloc.x, alloc.y, alloc.width, alloc.height))
-
-def get_mouse_monitor():
-    manager = Gdk.Display.get_default().get_device_manager()
-    pointer = manager.get_client_pointer()
-
-    screen, x, y = pointer.get_position()
-
-    return Gdk.Screen.get_default().get_monitor_at_point(x, y)
-
-def get_primary_monitor():
-    return Gdk.Screen.get_default().get_primary_monitor()
 
 def lookup_plugin_path(name):
     if name == "":

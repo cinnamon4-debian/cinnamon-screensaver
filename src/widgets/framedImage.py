@@ -1,4 +1,4 @@
-#! /usr/bin/python3
+#!/usr/bin/python3
 # coding: utf-8
 
 import gi
@@ -8,10 +8,12 @@ from gi.repository import Gtk, GdkPixbuf, Gio, GLib, GObject
 
 from util import utils, trackers
 
+MAX_IMAGE_SIZE = 320
+
 class FramedImage(Gtk.Image):
     """
-    Widget to hold the user face image.  It can be sized using CSS color.red value
-    (up to 255px) in Gtk 3.18, and using the min-height style property in gtk 3.20+.
+    Widget to hold the user face image.  It attempts to display an image at
+    its native size, up to a max sane size.
     """
     __gsignals__ = {
         "pixbuf-changed": (GObject.SignalFlags.RUN_LAST, None, (object,))
@@ -24,23 +26,8 @@ class FramedImage(Gtk.Image):
 
         self.file = None
         self.path = None
-        self.loader = None
-
-        self.current_pixbuf = None
-        self.next_pixbuf = None
-
-        self.min_height = 50
 
         trackers.con_tracker_get().connect(self, "realize", self.on_realized)
-
-    def get_theme_height(self):
-        ctx = self.get_style_context()
-
-        if utils.have_gtk_version("3.20.0"):
-            return ctx.get_property("min-height", Gtk.StateFlags.NORMAL)
-        else:
-            color = ctx.get_color(Gtk.StateFlags.NORMAL)
-            return (color.red * 255) + (color.green * 255) + (color.blue * 255)
 
     def on_realized(self, widget):
         self.generate_image()
@@ -63,14 +50,34 @@ class FramedImage(Gtk.Image):
         if self.get_realized():
             self.generate_image()
 
-    def generate_image(self):
-        self.set_size_request(-1, self.get_theme_height())
+    def set_image_internal(self, path):
+        pixbuf = None
 
-        if self.path:
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(self.path, -1, self.get_theme_height(), True)
+        try:
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file(path)
+        except GLib.Error as e:
+            message = "Could not load pixbuf from '%s' for FramedImage: %s" % (path, e.message)
+            error = True
+
+        if pixbuf != None:
+            if pixbuf.get_height() > MAX_IMAGE_SIZE or pixbuf.get_width() > MAX_IMAGE_SIZE:
+                try:
+                    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(path, MAX_IMAGE_SIZE, MAX_IMAGE_SIZE)
+                except GLib.Error as e:
+                    message = "Could not scale pixbuf from '%s' for FramedImage: %s" % (path, e.message)
+                    error = True
+
+        if pixbuf:
             self.set_from_pixbuf(pixbuf)
-            self.emit("pixbuf-changed", pixbuf)
+        else:
+            print(message)
+            self.clear_image()
 
+        self.emit("pixbuf-changed", pixbuf)
+
+    def generate_image(self):
+        if self.path:
+            self.set_image_internal(self.path)
         elif self.file:
             if self.cancellable != None:
                 self.cancellable.cancel()
@@ -100,8 +107,6 @@ class FramedImage(Gtk.Image):
     def on_file_written(self, file, result, data=None):
         try:
             if file.replace_contents_finish(result):
-                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(file.get_path(), -1, self.get_theme_height(), True)
-                self.set_from_pixbuf(pixbuf)
-                self.emit("pixbuf-changed", pixbuf)
+                self.set_image_internal(file.get_path())
         except GLib.Error:
             pass

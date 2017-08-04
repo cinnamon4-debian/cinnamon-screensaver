@@ -1,4 +1,4 @@
-#! /usr/bin/python3
+#!/usr/bin/python3
 # coding: utf-8
 
 import gi
@@ -31,8 +31,17 @@ class PasswordEntry(Gtk.Entry):
         self.placeholder_text = placeholder_text
         self.current_icon_name = None
         self.current_flag_id = 0
+        self.original_group = 0
 
         self.keyboard_controller = singletons.KeyboardLayoutController
+        trackers.con_tracker_get().connect(self.keyboard_controller,
+                                           "config-changed",
+                                           self.on_config_changed)
+
+        trackers.con_tracker_get().connect(self.keyboard_controller,
+                                           "layout-changed",
+                                           self.on_layout_changed)
+
         self.set_lockscreen_keyboard_layout()
 
         trackers.con_tracker_get().connect(self,
@@ -46,6 +55,9 @@ class PasswordEntry(Gtk.Entry):
         update_layout_icon(), just so GtkEntry thinks there's an icon there,
         that way it allocates space for it, and responds to clicks in the area.
         """
+        if not self.keyboard_controller.get_enabled():
+            return False
+
         icon_rect = widget.get_icon_area(Gtk.EntryIconPosition.PRIMARY)
         x = icon_rect.x
         y = icon_rect.y + 2
@@ -94,6 +106,9 @@ class PasswordEntry(Gtk.Entry):
                 name = name.upper()
 
             ctx = widget.get_style_context()
+            ctx.save()
+
+            ctx.set_state(Gtk.StateFlags.BACKDROP)
             font_size = ctx.get_property("font-size", Gtk.StateFlags.BACKDROP)
             family = ctx.get_property("font-family", Gtk.StateFlags.BACKDROP)
             cr.select_font_face(family[0], cairo.FONT_WEIGHT_NORMAL, cairo.FONT_SLANT_NORMAL)
@@ -118,6 +133,8 @@ class PasswordEntry(Gtk.Entry):
 
             cr.show_text(name)
 
+            ctx.restore()
+
         return False
 
     def start_progress(self):
@@ -141,6 +158,9 @@ class PasswordEntry(Gtk.Entry):
         self.grab_focus()
         self.update_layout_icon()
 
+    def on_config_changed(self, controller):
+        self.set_lockscreen_keyboard_layout()
+
     def on_icon_pressed(self, entry, icon_pos, event):
         if icon_pos == Gtk.EntryIconPosition.PRIMARY:
             self.keyboard_controller.next_group()
@@ -157,6 +177,14 @@ class PasswordEntry(Gtk.Entry):
         self.update_saved_group(self.keyboard_controller.get_current_group())
 
     def on_destroy(self, widget, data=None):
+        trackers.con_tracker_get().disconnect(self.keyboard_controller,
+                                              "config-changed",
+                                              self.on_config_changed)
+
+        trackers.con_tracker_get().disconnect(self.keyboard_controller,
+                                              "layout-changed",
+                                              self.on_layout_changed)
+
         self.restore_original_layout()
 
     def set_lockscreen_keyboard_layout(self):
@@ -190,10 +218,6 @@ class PasswordEntry(Gtk.Entry):
                                            "draw",
                                            self.on_draw)
 
-        trackers.con_tracker_get().connect(self.keyboard_controller,
-                                           "layout-changed",
-                                           self.on_layout_changed)
-
     def update_saved_group(self, group):
         settings.set_kb_group(group)
 
@@ -204,10 +228,6 @@ class PasswordEntry(Gtk.Entry):
         """
         if not self.keyboard_controller.get_enabled():
             return
-
-        trackers.con_tracker_get().disconnect(self.keyboard_controller,
-                                              "layout-changed",
-                                              self.on_layout_changed)
 
         self.keyboard_controller.set_current_group(self.original_group)
 
