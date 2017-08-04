@@ -1,4 +1,4 @@
-#! /usr/bin/python3
+#!/usr/bin/python3
 # coding: utf-8
 
 import gi
@@ -42,7 +42,6 @@ class UnlockDialog(BaseWindow):
 
         self.set_halign(Gtk.Align.CENTER)
         self.set_valign(Gtk.Align.CENTER)
-        self.set_size_request(350, -1)
 
         self.real_name = None
         self.user_name = None
@@ -96,7 +95,7 @@ class UnlockDialog(BaseWindow):
         button_box.pack_start(self.auth_unlock_button, False, False, 4)
 
         self.auth_switch_button = TransparentButton("screensaver-switch-users-symbolic", Gtk.IconSize.LARGE_TOOLBAR)
-        self.auth_switch_button.set_tooltip_text(_("Switch users"))
+        self.auth_switch_button.set_tooltip_text(_("Switch User"))
 
         trackers.con_tracker_get().connect(self.auth_switch_button,
                                            "clicked",
