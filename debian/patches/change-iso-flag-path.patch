@@ -4,7 +4,7 @@ Author: marga@debian.org
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 --- a/src/passwordEntry.py
 +++ b/src/passwordEntry.py
-@@ -58,7 +58,7 @@
+@@ -70,7 +70,7 @@
              name = self.keyboard_controller.get_current_icon_name()
  
              if name:
@@ -13,7 +13,7 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
  
                  try:
                      pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(filename, -1, height)
-@@ -215,4 +215,4 @@
+@@ -235,4 +235,4 @@
          Gtk.Widget.grab_focus(self)
  
          length = self.get_buffer().get_length()
