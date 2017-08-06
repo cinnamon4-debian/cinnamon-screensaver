@@ -5,8 +5,10 @@ cinnamon-screensaver (3.4.1-1) experimental; urgency=medium
   * Drop upstream patches
   * Bump group breaks (3.4)
   * Release to experimental
+  * Fix Python3 related depends/build-depends to match Python policy
+    (Closes: 866412)
 
- -- Maximiliano Curia <maxy@debian.org>  Sun, 06 Aug 2017 17:31:45 +0200
+ -- Maximiliano Curia <maxy@debian.org>  Sun, 06 Aug 2017 18:01:21 +0200
 
 cinnamon-screensaver (3.2.13-3) unstable; urgency=medium
 
