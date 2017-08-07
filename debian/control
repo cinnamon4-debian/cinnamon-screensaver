@@ -75,7 +75,7 @@ Architecture: all
 Pre-Depends: ${misc:Pre-Depends}
 Depends:
  cinnamon-screensaver (>= 3.1.0),
- gir1.2-webkit2-4.0 | gir1.2-webkit2-3.0,
+ gir1.2-webkit2-4.0,
  ${misc:Depends},
  ${python3:Depends},
 Description: Webkit plugin for cinnamon-screensaver
