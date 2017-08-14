@@ -13,10 +13,3 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
  
                  try:
                      pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(filename, -1, height)
-@@ -235,4 +235,4 @@
-         Gtk.Widget.grab_focus(self)
- 
-         length = self.get_buffer().get_length()
--        self.select_region(length, -1)
-\ No newline at end of file
-+        self.select_region(length, -1)
