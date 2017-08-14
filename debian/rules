@@ -18,3 +18,6 @@ override_dh_install:
 	dh_install -pcinnamon-screensaver debian/cinnamon-screensaver-dialog usr/lib/$(DEB_HOST_MULTIARCH)/cinnamon-screensaver
 	dh_install --list-missing
 	rm -rf debian/cinnamon-screensaver/usr/share/doc/cinnamon-screensaver-*
+
+override_dh_python3:
+	dh_python3 usr/share/cinnamon-screensaver
