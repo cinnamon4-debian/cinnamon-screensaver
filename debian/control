@@ -11,6 +11,7 @@ Build-Depends:
  automake,
  debhelper (>= 9),
  dh-autoreconf,
+ dh-python,
  gnome-pkg-tools (>= 0.10),
  gobject-introspection,
  intltool (>= 0.40.0),
