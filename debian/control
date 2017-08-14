@@ -62,6 +62,7 @@ Architecture: all
 Pre-Depends: ${misc:Pre-Depends}
 Depends:
  cinnamon-screensaver (>= 3.1.0),
+ python3:any,
  xscreensaver-data,
  ${misc:Depends},
  ${python3:Depends},
@@ -78,6 +79,7 @@ Pre-Depends: ${misc:Pre-Depends}
 Depends:
  cinnamon-screensaver (>= 3.1.0),
  gir1.2-webkit2-4.0,
+ python3:any,
  ${misc:Depends},
  ${python3:Depends},
 Description: Webkit plugin for cinnamon-screensaver
