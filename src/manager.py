@@ -95,7 +95,13 @@ class ScreensaverManager(GObject.Object):
                             transition = 0
                         else:
                             transition = c.STAGE_SPAWN_TRANSITION
+
                         self.spawn_stage(msg, transition, self.on_spawn_stage_complete)
+                    else:
+                        transition = 0
+
+                        self.stage.transition_in(transition, self.on_spawn_stage_complete)
+                        self.stage.set_message(msg)
                     return True
                 else:
                     status.Active = False
