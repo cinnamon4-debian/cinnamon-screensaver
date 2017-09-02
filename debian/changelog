@@ -1,12 +1,16 @@
-cinnamon-screensaver (3.4.2-1~) UNRELEASED; urgency=medium
+cinnamon-screensaver (3.4.2-1) unstable; urgency=medium
 
+  [ Fabio Fantoni ]
   * New upstream release (3.4.2).
   * Install cinnamon-screensaver-dialog in cinnamon-screensaver (Closes: 871576)
   * Remove old webkit2-3.0 support
     Thanks: Jeremy Bicha for the report (Closes: 864938)
   * Add missed python3-xapp dependency to cinnamon-screensaver.
 
- -- Fabio Fantoni <fantonifabio@tiscali.it>  Fri, 11 Aug 2017 13:14:19 +0200
+  [ Maximiliano Curia ]
+  * Release to unstable
+
+ -- Maximiliano Curia <maxy@debian.org>  Sat, 02 Sep 2017 07:35:25 +0200
 
 cinnamon-screensaver (3.4.1-1) experimental; urgency=medium
 
