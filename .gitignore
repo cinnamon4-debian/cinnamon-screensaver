@@ -1,5 +1,3 @@
-# Quilt patches
-.pc/
 INSTALL
 Makefile
 Makefile.in
@@ -54,6 +52,7 @@ xmldocs.make
 *.typelib
 *.pc
 .libs
+debian
 m4
 depcomp
 py-compile
