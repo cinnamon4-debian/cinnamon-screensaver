@@ -1,6 +1,6 @@
-cinnamon-screensaver (3.6.0-1~) UNRELEASED; urgency=medium
+cinnamon-screensaver (3.6.1-1~) UNRELEASED; urgency=medium
 
-  * New upstream release (3.6.0).
+  * New upstream release (3.6.1).
   * Bump group breaks (3.6).
   * Bump cinnamon-desktop dependency for new WallClock api.
 
