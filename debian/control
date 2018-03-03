@@ -25,8 +25,8 @@ Build-Depends:
  python3,
 Standards-Version: 3.9.8
 Homepage: http://cinnamon.linuxmint.com/
-Vcs-Browser: https://anonscm.debian.org/git/pkg-cinnamon/cinnamon-screensaver.git
-Vcs-Git: https://anonscm.debian.org/git/pkg-cinnamon/cinnamon-screensaver.git
+Vcs-Browser: https://salsa.debian.org/cinnamon-team/cinnamon-screensaver
+Vcs-Git: https://salsa.debian.org/cinnamon-team/cinnamon-screensaver.git
 
 Package: cinnamon-screensaver
 Architecture: any
@@ -57,6 +57,21 @@ Description: Cinnamon screen saver and locker
  cinnamon-screensaver is a screen saver and locker that aims to have simple,
  sane and secure defaults, and be well integrated with the Cinnamon desktop.
 
+Package: cinnamon-screensaver-webkit-plugin
+Architecture: all
+Pre-Depends: ${misc:Pre-Depends}
+Depends:
+ cinnamon-screensaver (>= 3.1.0),
+ gir1.2-webkit2-4.0,
+ python3:any,
+ ${misc:Depends},
+ ${python3:Depends},
+Description: Webkit plugin for cinnamon-screensaver
+ cinnamon-screensaver is a screen saver and locker that aims to have simple,
+ sane and secure defaults, and be well integrated with the Cinnamon desktop.
+ .
+ This package contains the plugin for using webkit screensavers.
+
 Package: cinnamon-screensaver-x-plugin
 Architecture: all
 Pre-Depends: ${misc:Pre-Depends}
@@ -72,21 +87,6 @@ Description: XScreensaver plugin for cinnamon-screensaver
  sane and secure defaults, and be well integrated with the Cinnamon desktop.
  .
  This package contains the plugin for using the xscreensaver animations.
-
-Package: cinnamon-screensaver-webkit-plugin
-Architecture: all
-Pre-Depends: ${misc:Pre-Depends}
-Depends:
- cinnamon-screensaver (>= 3.1.0),
- gir1.2-webkit2-4.0,
- python3:any,
- ${misc:Depends},
- ${python3:Depends},
-Description: Webkit plugin for cinnamon-screensaver
- cinnamon-screensaver is a screen saver and locker that aims to have simple,
- sane and secure defaults, and be well integrated with the Cinnamon desktop.
- .
- This package contains the plugin for using webkit screensavers.
 
 Package: libcscreensaver0
 Section: libs
