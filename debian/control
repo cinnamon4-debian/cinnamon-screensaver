@@ -32,9 +32,9 @@ Package: cinnamon-screensaver
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Depends:
- cinnamon-desktop-data (>= 3.0.0),
+ cinnamon-desktop-data (>= 3.5),
  gir1.2-accountsservice-1.0,
- gir1.2-cinnamondesktop-3.0,
+ gir1.2-cinnamondesktop-3.0 (>= 3.5),
  gir1.2-gkbd-3.0,
  gir1.2-glib-2.0,
  gir1.2-gtk-3.0,
@@ -51,7 +51,7 @@ Depends:
  ${shlibs:Depends},
 Recommends: cinnamon-screensaver-x-plugin
 Suggests: cinnamon-screensaver-webkit-plugin
-Breaks: cinnamon (<< 3.4), cinnamon-screensaver-x-plugin (<< 3.4.2-1~)
+Breaks: cinnamon (<< 3.6), cinnamon-screensaver-x-plugin (<< 3.4.2-1~)
 Replaces: cinnamon-screensaver-x-plugin (<< 3.4.2-1~)
 Description: Cinnamon screen saver and locker
  cinnamon-screensaver is a screen saver and locker that aims to have simple,
