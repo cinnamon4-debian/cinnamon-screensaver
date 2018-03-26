@@ -1,3 +1,12 @@
+cinnamon-screensaver (3.6.1-2~) UNRELEASED; urgency=medium
+
+  * New revision
+  * Drop dh-autoreconf (no longer needed with dh >= 10)
+  * Drop dh's parallel arg (no longer needed with dh >= 10)
+  * Drop soon to be deprecated dh_install's --list-missing option
+
+ -- Maximiliano Curia <maxy@debian.org>  Mon, 26 Mar 2018 16:05:26 +0200
+
 cinnamon-screensaver (3.6.1-1) unstable; urgency=medium
 
   [ Fabio Fantoni ]
