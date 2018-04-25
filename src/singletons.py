@@ -5,6 +5,11 @@ import gi
 from util import trackers, settings
 import status
 
+# Watch for, and kill, mate- and gnome-screensaver in case they're activated by a program
+# over dbus.
+from dbusdepot.nameBlocker import NameBlocker as _NameBlocker
+NameBlocker = _NameBlocker()
+
 # Our dbus proxies are abstracted out one level more than really necessary - we have
 # clients that the screensaver initializes, that can never fail.  The actual connection
 # business to the various dbus address is performed asynchronously from within each client.
