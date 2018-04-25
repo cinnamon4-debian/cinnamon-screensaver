@@ -1,4 +1,4 @@
-Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: cinnamon-screensaver
 Upstream-Contact: Linux Mint Project <root@linuxmint.com>
 Source: https://github.com/linuxmint/cinnamon-screensaver.git
@@ -14,10 +14,6 @@ License: LGPL-2+
 
 Files: debian/*
 Copyright: 2014-2016, Maximiliano Curia <maxy@debian.org>
-License: LGPL-2+
-
-Files: debian/cinnamon-screensaver-dialog
-Copyright: 2017, Google, Inc
 License: LGPL-2+
 
 Files: libcscreensaver/setuid.c
