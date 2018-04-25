@@ -15,9 +15,7 @@ override_dh_auto_configure:
 	    --libexecdir=\$${prefix}/lib/$(DEB_HOST_MULTIARCH)/cinnamon-screensaver
 
 override_dh_install:
-	dh_install -pcinnamon-screensaver debian/cinnamon-screensaver-dialog usr/lib/$(DEB_HOST_MULTIARCH)/cinnamon-screensaver
-	dh_install
-	# rm -rf debian/cinnamon-screensaver/usr/share/doc/cinnamon-screensaver-*
+	dh_install --list-missing
 
 override_dh_python3:
 	dh_python3 usr/share/cinnamon-screensaver
