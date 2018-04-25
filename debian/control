@@ -40,6 +40,7 @@ Depends:
  gir1.2-xapp-1.0,
  iso-flags-png-320x240,
  libcscreensaver0 (= ${binary:Version}),
+ libpam-gnome-keyring,
  python3-gi,
  python3-gi-cairo,
  python3-setproctitle,
