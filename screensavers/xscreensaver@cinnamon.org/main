@@ -10,6 +10,7 @@ import argparse
 import syslog
 import signal
 import os
+import psutil
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -29,6 +30,7 @@ class XScreensaverPlugin:
         GLib.unix_signal_add(GLib.PRIORITY_HIGH, signal.SIGTERM, self.on_terminate)
 
         self.proc = None
+        self.hack = None
 
         if self.args.standalone:
             self.plug = Gtk.Window()
@@ -71,15 +73,24 @@ class XScreensaverPlugin:
             try:
                 path = shlex.split(direc + hack)
                 if os.path.exists(path[0]):
+                    sc_path = self.get_safechild_path()
+
+                    if sc_path == None:
+                        raise Exception("Cannot find safechild subprocess wrapper, exiting")
+
+                    path.insert(0, sc_path)
                     path.append("-window-id")
                     path.append(str(self.xid))
+
+                    self.hack = hack
+
                     try:
-                        self.proc = Gio.Subprocess.new(path, Gio.SubprocessFlags.NONE)
+                        self.proc = Gio.Subprocess.new(path, Gio.SubprocessFlags.STDIN_PIPE)
                         success = True
                     except GLib.Error as e:
                         print("Error spawning screensaver hack: %s" % e.message)
             except Exception as e:
-                pass
+                print(e)
 
         if not success:
             syslog.syslog("cinnamon-screensaver: Screensaver '%s' not found" % hack)
@@ -95,13 +106,32 @@ class XScreensaverPlugin:
 
     def kill_plugin(self):
         if self.proc:
-            self.proc.send_signal(signal.SIGTERM)
+            self.proc.force_exit()
             self.proc = None
+
+        for proc in psutil.process_iter():
+            if proc.name() == self.hack:
+                proc.kill()
 
     def on_terminate(self, data=None):
         self.kill_plugin()
         self.plug.destroy()
         Gtk.main_quit()
+
+    def get_safechild_path(self):
+        datadirs = GLib.get_system_data_dirs()
+
+        for datadir in datadirs:
+            try_path = os.path.join(datadir,
+                                    "cinnamon-screensaver",
+                                    "screensavers",
+                                    "xscreensaver@cinnamon.org",
+                                    "safechild")
+
+            if os.path.exists(try_path):
+                return try_path
+
+        return None
 
     def ensure_config_file(self):
         """
