@@ -40,7 +40,6 @@ Depends:
  gir1.2-xapp-1.0,
  iso-flags-png-320x240,
  libcscreensaver0 (= ${binary:Version}),
- libpam-gnome-keyring,
  python3-gi,
  python3-gi-cairo,
  python3-setproctitle,
@@ -49,7 +48,7 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
  ${shlibs:Depends},
-Recommends: cinnamon-screensaver-x-plugin
+Recommends: cinnamon-screensaver-x-plugin, libpam-gnome-keyring
 Suggests: cinnamon-screensaver-webkit-plugin
 Breaks: cinnamon (<< 3.6), cinnamon-screensaver-x-plugin (<< 3.4.2-1~)
 Replaces: cinnamon-screensaver-x-plugin (<< 3.4.2-1~)
