@@ -14,8 +14,9 @@ override_dh_auto_configure:
 	    --enable-locking \
 	    --libexecdir=\$${prefix}/lib/$(DEB_HOST_MULTIARCH)/cinnamon-screensaver
 
-override_dh_install:
-	dh_install --list-missing
+# --list-missing will be default in compat 12
+override_dh_missing:
+	dh_missing --list-missing
 
 override_dh_python3:
 	dh_python3 usr/share/cinnamon-screensaver
