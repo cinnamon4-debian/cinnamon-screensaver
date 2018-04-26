@@ -1,4 +1,3 @@
-etc/pam.d/cinnamon-screensaver
 usr/bin/cinnamon-screensaver
 usr/bin/cinnamon-screensaver-command
 usr/lib/*/cinnamon-screensaver/cinnamon-screensaver-pam-helper

@@ -5,5 +5,7 @@ usr/lib/*/pkgconfig/cscreensaver.pc
 usr/include/cinnamon-screensaver/
 # precompiled python files
 */__pycache__/
+# Same content of debian/cinnamon-screensaver.pam
+etc/pam.d/cinnamon-screensaver
 
 usr/share/gir-1.0/CScreensaver-1.0.gir
