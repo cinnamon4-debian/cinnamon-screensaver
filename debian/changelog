@@ -1,8 +1,19 @@
-cinnamon-screensaver (3.8.0-1~) UNRELEASED; urgency=medium
+cinnamon-screensaver (3.8.0-1) experimental; urgency=medium
 
+  [ Fabio Fantoni ]
   * New upstream release (3.8.0).
+  * update debian/copyright
+  * don't install generated /etc/pam.d/cinnamon-screensaver
+  * libpam-gnome-keyring as recommends instead dep
+  * debian/rules: add dh_missing --list-missing until will be default
 
- -- Fabio Fantoni <fantonifabio@tiscali.it>  Wed, 25 Apr 2018 16:59:55 +0200
+  [ Maximiliano Curia ]
+  * Bump Standards-Version to 4.1.4.
+  * Enable hardening bindnow
+  * Bump group breaks (3.8)
+  * Release to experimental
+
+ -- Maximiliano Curia <maxy@debian.org>  Sat, 05 May 2018 14:30:11 +0200
 
 cinnamon-screensaver (3.6.1-2) unstable; urgency=medium
 
