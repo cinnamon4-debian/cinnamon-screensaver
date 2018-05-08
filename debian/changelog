@@ -1,0 +1,596 @@
+cinnamon-screensaver (3.8.1) tara; urgency=medium
+
+  [ Germán Franco ]
+  * Remove border-image from the password entry (#277)
+
+ -- Clement Lefebvre <root@linuxmint.com>  Sun, 06 May 2018 15:20:28 +0100
+
+cinnamon-screensaver (3.8.0) tara; urgency=medium
+
+  [ Michael Webster ]
+  * stage.py: Disconnect from, and destroy the CsScreen last, when tearing down the stage.
+
+  [ Clement Lefebvre ]
+  * Add CI configuration
+  * CI: Fix dependencies
+
+  [ Michael Thies ]
+  * keybindings: Allow suspend, hibernate and screen rotation from screensaver (#257)
+
+  [ itzexor ]
+  * libcscreensaver/service.py: fix xdg-screensaver suspend
+  * doc: add back dbus interface documentation
+
+  [ Michael Webster ]
+  * dbus: Own other screensaver names to prevent them from being activated on demand during a cinnamon session.
+  * nameBlocker.py: Watch for dbus activations and kill instead of simply blocking.  See inline notes for explanation related to xdg-screensaver.
+  * xscreensavers: Add safechild wrapper (from blueberry) - provides better control over screensaver hack processes, to prevent their lingering after the screensaver or cinnamon-settings is done with them.
+  * xscreensavers: Use python3 for safechild, attempt to kill the hack process when terminated.
+  * service, manager: always complete the lock invocation, whether we succeed or not, and whether we were already active or not.
+  * webkit script: Use correct path to user webkit screensavers.
+
+  [ Fabio Fantoni ]
+  * debian: wrap-and-sort -bst (#274)
+  * debian: Call autogen.sh with dh_autoreconf
+  * cleanup debian/rules from not needed gnome things
+  * debian: add missed gir to libcscreensaver0
+  * debian: right lib path from debian/rules without generate .install
+  * debian: improve python3 support
+  * Bump debhelper build-dep and compat to 10
+  * .gitignore: debian/files instead all debian folder
+  * improve debian/cinnamon-screensaver.install
+  * add debian/not-installed
+  * debian: remove old prerm
+  * update debian/copyright
+  * improve debian/control
+  * move pamhelper to libexec
+  * debian: remove cinnamon-screensaver-pam-helper, integrating in cinnamon-screensaver pkg
+  * circleci: remove mint18 job
+  * debian/control: add break/replace anyway to remove old cinnamon-screensaver-pam-helper
+
+  [ Clement Lefebvre ]
+  * Don't show switch-user when org.cinnamon.desktop.lockdown disable-user-switching is False
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 19 Apr 2018 12:46:03 +0100
+
+cinnamon-screensaver (3.6.1) sylvia; urgency=medium
+
+  * Disable fade-in effects on idle
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 09 Nov 2017 12:43:32 +0000
+
+cinnamon-screensaver (3.6.0) sylvia; urgency=medium
+
+  [ Michael Webster ]
+  * add an issue template
+  * CsScreen: Fix hotplug/screen change detection and response, other issues.
+  * logindClient.py: Produce a more helpful message when logind is running, but we're unable to figure out a valid session id.
+  * manager/stage: Allow a second activation trigger to override a previous.
+  * manager.py: Force secondary activations to be immediate. (prevents flash)
+  * cs-notification-watcher.c: Ignore notifications that replace existing ones, by checking if the 'replaces_id' field of the notification is non-zero.
+  * clock: Update for new wall clock API.
+  * debian/control: Update cinnamon-desktop dependency for new WallClock api.
+
+  [ Leigh Scott ]
+  * fix indent (#238)
+
+  [ Michael Webster ]
+  * cs-screen-x11.c: Use Gdk to get the screen size, the previous method doesn't appear to update in time to have the new size, causing exposure to the desktop in some cases, such as resizing host windows of virtual machines.
+  * cs-screen-x11.c: GdkScreen width and height arrive already scaled for hidpi.
+  * logind/consolekit: Refresh screen and monitor info when coming back from inactive (such as sleep.)
+  * stage.py: Call gdk_flush to allow the server to catch up before getting updated screen/monitor infos.
+  * keybindings: remove ability to take screenshots, restore ability to use computer power button.
+
+  [ Clement Lefebvre ]
+  * l10n: Update POT file
+
+ -- Clement Lefebvre <root@linuxmint.com>  Mon, 23 Oct 2017 15:50:38 +0100
+
+cinnamon-screensaver (3.4.1) sonya; urgency=medium
+
+  [ Michael Webster ]
+  * stage.py: Kill any screensaver plugins when destroying all of the widgets - this will leave unfinished plugin processes.
+  * framedImage: render images at their native size using the theme value as the maximum size, rather than desired size.  This ensures the image displays at its best possible size for quality, but still makes sure an oversize image doesn't break anything.
+  * stage.py: Don't re-allocate the floating widgets unless necessary to prevent obscuring of the unlock widget.  This prevents the small jump of the clock when waking the computer, depending on settings.
+  * framedImage: Remove some dead lines, use the correct css property, update commenting.
+  * fix typo in 3.20 css file
+  * clock: Update to use new wall-clock api to set the correct update interval depending on the provided date/time format.
+
+  [ Clement Lefebvre ]
+  * Don't lock the screen in live or guest sessions
+
+  [ Michael Webster ]
+  * framedImage.py: Stop using CSS for image size - since we now use the image's native size if it is reasonable to do so, there's no need for a theme to be involved.  Just hardcode a sane maximum and keep images that size or less. is not valid CSS (even though that's what we're using min-height for here)
+
+  [ leigh123linux ]
+  * remove old webkit2-3.0 support
+
+ -- Clement Lefebvre <root@linuxmint.com>  Tue, 20 Jun 2017 15:39:58 +0200
+
+cinnamon-screensaver (3.4.0) sonya; urgency=medium
+
+  [ leigh123linux ]
+  * add libexec path
+
+  [ Clement Lefebvre ]
+  * l10n: Update POT file
+
+  [ Michael Webster ]
+  * Add --interactive-debug startup switch.  This turns on GtkInspector, restricts the screensaver stage to a single monitor, and some other things to allow interaction with ui elements using the inspector tools.
+  * mediaPlayerWatcher.py: catch SyntaxError exception when evaluating PlaybackStatus property.
+  * framedImage.py:  Just silently fail if a downloaded image fails to be loaded into a pixbuf.
+  * some theme fixes for gtk 3.20+
+  * stage.py: clear clipboards only once, when waking.  raise_unlock_widget gets called repeatedly when there is input (to refresh other things) - having it repeatedly clear the clipboard was unnecessary, and prevented keyboard navigation actions that included selection of characters - such as ctrl-a, shift-home and -end.
+  * uPowerClient.py: aggregate the proxy's signal emissions into a single power-state-changed event for the power client.  This prevents confusion at the stage level when updating for power events.
+  * notifications: Add some debugging help.
+  * notificationWidget.py: ignore network notifications - these occur often around suspend/resume time, and we don't want them artificially padding the notification count.
+  * xscreensaver plugin: Use GSubprocess instead of g_spawn_async for hacks.
+  * stage.py:  Add some error-handling for widget creation, with exit strategy, in case something goes wrong.  We don't want to leave the user with an inaccessible desktop.
+  * xscreensaver plugin: provide a default .xscreensaver file if one doesn't already exist.
+
+  [ Sparky Bluefang ]
+  * Add /usr/lib/misc/xscreensaver/ to the xscreensaver search directories.
+
+  [ Michael Webster ]
+  * stage.py: More error-handling fixes.  Add a debug package to the debian build.
+  * authClient.py: Add some debugging info.
+  * Add a CsScreen object:  GdkScreen is unreliable for figuring out monitor sizes and resolutions, particularly in non-default configurations.
+  * Enable notification watcher's debug code upon startup, rather than during widget construction.
+  * Respect the "spanned" setting for wallpapers.  Note, this will currently also affect the plugins as well, but I didn't see this as a serious drawback.
+  * cs-screen-x11.c: Account for monitor scale factor.  GTK expects the values to be scaled already.
+  * cs-screen-x11.c: code cleanup (sorry git!)
+  * singletons.py: Add some debugging for login manager commands.
+  * Remove x11.py, move code to CsScreen class, remove python3-xlib dependency.
+  * service.py: Wait to respond to the Lock command until the screensaver has called back that it is now active.
+  * manager/stage: Lock immediately, without fade-in.  This and the previous commit allow the screensaver to be activated synchronously from cinnamon-session in response to suspend/hibernate actions, and ensure it's fully active already when resuming.
+  * cinnamon-screensaver-main.py: don't import the ScreensaverService until we're sure we'll need it.  This prevents singletons from getting initialized too early, and we lose the correct state of status.Debug
+  * cs-notification-watcher.c: transient hint should be a boolean type, not int.
+  * service.py: Add the invocation to the queue prior to calling on the manager to lock.  The active signal could be sent back before it gets added otherwise, causing us to leave the calling command hanging.
+  * stage/fader: Realize the stage offscreen, then reposition it before starting our fade in.  This prevents the initial flash sometimes seen when the idle fade kicks in.
+  * cs-screen-x11.c: Use PointerRoot instead of None for XSetInputFocus. This does a better job of reacquiring keyboard control, and allows the screensaver to activate when a virtualbox guest window is focused.
+  * stage/fader: Add the reposition call to the fader cycle, this ensures it gets reliably called in sync with redraws, otherwise we can still get a flash on realizing the window.
+  * cs-auth-pam.c: Only attempt to remove the io watch if thread_done is FALSE.  It is set to TRUE in the GIOFunc cs_auth_loop_quit, which also returns FALSE, signalling to remove the source.  We can't zero out watch_id there, which was causing a warning when cs_auth_pam_verify_user exited.
+  * volumeControl.py: Don't show if we can't get a valid CvcMixerControl, and only connect signals if we do.
+  * mediaPlayerWatcher.py: use the async versions of the play/pause, previous and next methods.  This prevents a dbus sync deadlock from freezing the screensaver.  Observed issue using Google Play Desktop Music Player.  (https://www.googleplaymusicdesktopplayer.com)
+  * passwordEntry.py: Initialize self.original_group, don't perform draw callback without a live controller (this disparity can occur after session interruptions - sleep, switch user, etc... - but not consistently.)
+  * passwordEntry.py: Reload the keyboard layout if the xkb configuration changes.
+  * stage.py: fix screen changed callback
+
+  [ leigh123linux ]
+  * autogen.sh: don't run aclocal
+
+  [ Michael Webster ]
+  * cs-screen.h: remove XID typedef, include gdkx.h instead, which will include xlib.
+
+  [ leigh123linux ]
+  * Fix python shebang
+
+  [ Clement Lefebvre ]
+  * Fix csd-media-keys DBUS name
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 04 May 2017 14:02:08 +0100
+
+cinnamon-screensaver (3.2.13) serena; urgency=medium
+
+  [ Dustin Falgout ]
+  * AuthClient: Check for pam helper in subdirectory
+  * fix typo
+
+  [ Michael Webster ]
+  * cinnamon-screensaver-pam-helper.c: debug mode - don't print message strings, they may contain the password.
+
+  [ leigh123linux ]
+  * add libexec path
+
+  [ Michael Webster ]
+  * manager.py: Fix pam helper cancellation in LMDE - we have an existing workaround for LMDE that skips the fade-out when unlocking, due to another issue.  This causes our despawn_stage callback to be called immediately, which sets self.stage to None, before cancel_unlocking can be run.
+  * keybindings.py: Don't allow the keyboard popup menu key to slip thru.
+  * stage: Clear the clipboard if we're locked (should be inaccessible anyhow but...)
+  * Add some tooltips to a few ui elements.
+  * stage.py: Fix logic surrounding hiding/showing the floating widgets when power states change, or when a plugin is unable to run due to the power state.
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 29 Dec 2016 15:03:13 +0000
+
+cinnamon-screensaver (3.2.12) serena; urgency=medium
+
+  * AuthClient: Find path for pam-helper according to runtime info
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 22 Dec 2016 17:24:46 +0000
+
+cinnamon-screensaver (3.2.11) serena; urgency=medium
+
+  [ Vladimir Didenko ]
+  * Move pam-helper binary to libexec directory - some distros forbid ELF binaries in /usr/share
+
+  [ Clement Lefebvre ]
+  * packaging: Move cinnamon-screensaver-pam-helper to its own package
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 22 Dec 2016 15:43:30 +0000
+
+cinnamon-screensaver (3.2.10) serena; urgency=medium
+
+  [ leigh123linux ]
+  * Fix FSF address
+
+  [ Michael Webster ]
+  * cinnamon-screensaver-pam-helper: Add a sleep to the stdin wait loop, make sure the helper is killed whenever the screensaver is deactivated.
+  * manager.py: only try to cancel_unlocking if there is a stage.
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 22 Dec 2016 11:50:00 +0000
+
+cinnamon-screensaver (3.2.9) serena; urgency=medium
+
+  [ Michael Webster ]
+  * authClient.py: Use a constructor for GBytes creation (needed in LMDE introspection), ignore a message sent prior to the auth client being initialized (user hit enter as a means of bringing up the unlock dialog.)
+
+ -- Clement Lefebvre <root@linuxmint.com>  Mon, 12 Dec 2016 15:29:50 +0000
+
+cinnamon-screensaver (3.2.8) serena; urgency=medium
+
+  [ Michael Webster ]
+  * debian/cinnamon-screensaver.install: fix packaging of cinnamon- screensaver-pam-helper.
+
+ -- Clement Lefebvre <root@linuxmint.com>  Sat, 10 Dec 2016 14:05:34 +0000
+
+cinnamon-screensaver (3.2.7) serena; urgency=medium
+
+  [ leigh123linux ]
+  * Change shebang
+  * Change shebang
+
+  [ Michael Webster ]
+  * stage.py: Keep floating widgets centered within their GtkAlign region instead of using the padding CSS property - this can only ever work by taking monitor size into account.
+  * stage - the unlock dialog can take up more than 1/3 the width of the screen, so account for its width when positioning floating widgets during Awake state.
+
+  [ leigh123linux ]
+  * Add missing -lXext
+  * remove spaces
+
+  [ Clement Lefebvre ]
+  * Volume control: Don't crash when PA returns no default sink
+  * l10n: Update POT file
+
+  [ Michael Webster ]
+  * stage.py: Regrab the stage if grab is broken (notably by fingerprint-helper's gui.)
+  * Fix pam authentication to work with multi-factor, fingerprint, etc..
+  * floating.py: Increase positioning delay to 30 seconds.
+  * audioPanel.py: Don't show panel at all if no players are active.
+  * Couple fixes: show floating widgets immediately upon sleep, add a description for AuthClient, send a failure notice when we fail.
+
+  [ Dustin Falgout ]
+  * Update pam config for multi-distro compatibility
+
+  [ Michael Webster ]
+  * Add preference to disable floating widgets...
+  * clock.py: Make clock preference apply everywhere (like our other prefs)
+  * cinnamon-screensaver-main.py: use setproctitle to set the process name as "cinnamon-screensaver"
+  * configure.ac: Fix regression from git conflict - originally from aad72c98f1df63
+  * Add a build option to enable/disable use of setresuid/setresgid in the setuid.c file for some distributions.  The default behavior remains to *not* use this.
+  * Override the background color to transparent for various 'primary' widgets, this reduces (but does not eliminate) the tendency to get a 'flash' when the screensaver spawns its window.
+  * mediaPlayerWatcher.py: handle metadata more gracefully - some players can return arrays of artist info, some a string - handle either.
+
+ -- Clement Lefebvre <root@linuxmint.com>  Sat, 10 Dec 2016 11:48:37 +0000
+
+cinnamon-screensaver (3.2.6) serena; urgency=medium
+
+  * Remove import on BlinkLabel
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 24 Nov 2016 22:38:57 +0000
+
+cinnamon-screensaver (3.2.5) serena; urgency=medium
+
+  * Remove position bar and position labels in infobar
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 24 Nov 2016 18:55:32 +0000
+
+cinnamon-screensaver (3.2.4) serena; urgency=medium
+
+  [ Michael Webster ]
+  * Replace cinnamon-screensaver bin script with cinnamon-screensaver.c, to perform setuid checks and fixes prior to python and gtk starting.
+  * utils.py: remove liveuser check, it doesn't work as expected.
+
+ -- Clement Lefebvre <root@linuxmint.com>  Wed, 23 Nov 2016 12:47:48 +0000
+
+cinnamon-screensaver (3.2.3) serena; urgency=medium
+
+  [ Willy Sudiarto Raharjo ]
+  * Declare GdkX11.
+
+  [ Michael Webster ]
+  * events: For gtk < 3.18, skip the fade out animation, and immediately destroy the window.  Move the deactivate command into an idle callback, so we're not attempting to destroy the window while in the middle of processing a motion event.
+  * passwordEntry.py: emulate Gtk.Entry.grab_focus_without_selecting() - the real call was recently removed, as it doesn't exist in Gtk 3.14, however the behavior is still necessary - tabbing between buttons and entry will cause the entire partial password to be selected, causing overwrite.  This restores the original functionality without requiring gtk 3.18+
+  * Fixes for Betsy/Jessie:
+  * panels: Remove separators.  Tweak spacing for keyboard layout icon in the gtk 3.18 css file.
+  * utils.py: clean up get_user_name() calls.
+  * Disable locking if pam files aren't found or if we're running as root.
+  * utils.py: add 'liveuser' group check to user_can_lock() function.
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 17 Nov 2016 09:49:37 +0000
+
+cinnamon-screensaver (3.2.2) serena; urgency=medium
+
+  * pkg: Added missing dep on python3-gi-cairo
+
+ -- Clement Lefebvre <root@linuxmint.com>  Sun, 13 Nov 2016 13:13:58 +0000
+
+cinnamon-screensaver (3.2.1) serena; urgency=medium
+
+  [ Clement Lefebvre ]
+  * pkg: Add intltool to build-dep
+  * pkg: Don't depend on python3-xlib in LMDE
+  * Layout/l10n: Fix minor visual issues
+
+  [ Michael Webster ]
+  * unlock/accountsServiceClient: don't cache the username and face path, instead fetch them from AccountsService when used.  Also, allow for no face image by not using a fallback generic image, and hiding the image widget if there is no face for it.
+  * Remove some Gtk 3.18+ api calls - with a small change to GdkScreen updating, the stacking order is correct at stage construction and never changes.
+
+  [ Willy Sudiarto Raharjo ]
+  * ConsoleKit: Add lock/unlock signal.
+
+ -- Clement Lefebvre <root@linuxmint.com>  Sun, 13 Nov 2016 12:12:35 +0000
+
+cinnamon-screensaver (3.2.0) serena; urgency=medium
+
+  [ Michael Webster ]
+  * Rewrite
+
+  [ itzexor ]
+  * utils.py: add back alternate display manager support for user switching
+
+  [ Michael Webster ]
+  * Terminate plugins more cleanly, terminate them when they're no longer visible, terminate them when we're on battery (and restart them when we get plugged back in), clean up handling of transition between plugin and wallpaper.
+  * packaging: use pkg-config to figure out where our typelib/lib files go
+  * cs-notification-watcher.c: ignore transient notifications (such as those from banshee on track changes)
+
+  [ leigh123linux ]
+  * Revert "Fix gtkdocize: GTK_DOC_CHECK not called in ./configure.ac"
+  * Fix the gtkdoc issue properly
+
+  [ Maximiliano Curia ]
+  * Make AX_ macros optional and drop unused parts
+  * Drop gnome-common, add autconf-archive build dependency
+
+  [ Michael Webster ]
+  * Add media player widget, reorganize files a bit
+  * Remove borders from infobar widgets
+  * Add audio buttons to the focus chain
+  * notifications: Ignore notifications from active media players
+  * Fix some names and lint.
+  * media player: handle metadata safely, and make sure artist-album string is handled properly depending on the data we have available.
+  * Update README.md
+  * Make volume and position bars draw alike, make it easier to theme both, tweak layout of the audiobar a bit.  Also, fix div by 0 when a track doesn't have a max position.
+  * Rename Audio/InfoBar to Audio/InfoPanel
+  * playerControl.py: Improve how we get h:m:s from the microseconds reported for position and track length.
+
+  [ Corbin Auriti ]
+  * Delete debug-screensaver.sh
+
+  [ Michael Webster ]
+  * Theme work - ensure everything is reasonably able to be themed, and provide fallback styling if the currently selected theme doesn't supply anything - this is done by searching for the toplevel style class - "csstage" corresponding to the toplevel window for the screensaver.
+  * Add separate theming for Gtk 3.20+, update .gitignore, load a css file appropriate to the current Gtk version at startup (if no theme support is found).  Fix error handling in mediaPlayerWatcher.py.
+  * Update README.md, couple fixes to css files
+  * update pot file
+  * trackers: dump timer and connection list in debug mode after unlocking.
+  * manager.py, stage.py: add some documentation.
+  * More documentation..
+  * Add some documentation to the unlock dialog, make the user image size definable in CSS, reimplement the AccountsService handling as a client singleton like every other service.
+  * More cleanup, documentation
+  * Finish documentation
+  * Fix a couple regressions from documenting/refactoring
+  * Stage: Listen for GdkScreen changes in size and number of monitors, and reconstruct the monitorViews as needed.
+  * stage.py: Fix oversized info panel.
+  * Add script for testing keyboard layouts.
+  * Use XAppKbdLayoutController to interact with libgnomekbd for switching keyboard layouts and getting reliable flag icons.
+  * unlock.py: Split out PasswordEntry and FramedImage to their own files.
+  * Fix keyboard layout representation in the password entry.  GtkEntry is hardcoded to produce a menu-sized icon.  We supply a blank icon, and draw our own where it belongs, and at a better size.  This way, we can also provide themed text layout names as well, depending on user preference.
+  * Add albumart widget.
+  * finish implementing albumart preference.
+  * stage: Don't let floating widgets overlap, catch a couple potential errors when loading pixbufs - namely when we interrupt it by skipping a track.
+  * pyflakes cleanup
+  * libcscreensaver: Fix new build warnings, fix shape extension detection for the event filter.
+  * passwordEntry.py: Don't connect to draw and icon press signals if the keyboard layout controller is disabled.
+  * Remove unused file.
+  * proxies: Strip out unused interface elements to reduce lib size and runtime memory use (slightly.)
+  * passwordEntry.py: Rework to stay in sync with XApp.KbdLayoutController changes.  Perform all rendering/loading of icons ourselves, depend on new icon package, use new cinnamon desktop preferences for flag/case settings.
+  * Add preferences to lock down media keys, media player controls, notification counter.
+
+ -- Clement Lefebvre <root@linuxmint.com>  Sat, 09 Jul 2016 23:50:39 -0400
+
+cinnamon-screensaver (3.0.1) sarah; urgency=medium
+
+  [ JosephMcc ]
+  * gs-lock-plug: Remove the hardcoded text colors
+
+  [ Michael Webster ]
+  * Fix unlock dialog display in hidpi.
+  * gs-window-x11.c: fix a couple compiler warnings, clean up.
+  * gs-lock-plug.c: look at AccountsService for user pic if .face is not found.  Simplify some of the code - pixbuf loaders have built-in file checking.
+
+ -- Clement Lefebvre <root@linuxmint.com>  Mon, 30 May 2016 16:08:20 +0100
+
+cinnamon-screensaver (3.0.0) sarah; urgency=medium
+
+  [ monsta ]
+  * configure.ac: drop obsolete macro
+  * configure.ac: use dots when printing dbus version
+
+  [ Clement Lefebvre ]
+  * Support new libsystemd (which replaces libsystemd-login)
+
+  [ Michael Webster ]
+  * Stop trying to make gnome-screensaver* a symlink to cinnamon-screensaver*
+
+ -- Clement Lefebvre <root@linuxmint.com>  Sat, 23 Apr 2016 16:14:29 +0100
+
+cinnamon-screensaver (2.8.0) rosa; urgency=medium
+
+  [ JosephMcc ]
+  * cleanup: replace deprecated gdk_cursor_unref() with g_object_unref()
+  * cleanup an unused variable
+
+  [ Michael Webster ]
+  * gs-window-x11.c: Fix random crashing due to accessing invalid pointers when cleaning up the GSWindow instance.
+  * gs-window-x11.c: Fix trying to control the screensaver socket after the plug has been removed (race condition) - by default the socket is destroyed when this happens.
+  * gs-lock-plug.c: fix runtime warning
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 16 Oct 2015 16:06:16 +0100
+
+cinnamon-screensaver (2.6.4) rafaela; urgency=medium
+
+  [ Joseph C Wang ]
+  * fix segfault due to wrong object being destroyed
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 26 Jun 2015 14:15:15 +0200
+
+cinnamon-screensaver (2.6.3) rafaela; urgency=medium
+
+  [ Dexter Chua ]
+  * Fix zombie screensavers
+
+  [ Clement Lefebvre ]
+  * Removed Tower of Hanoi Webkit screensaver (takes too much CPU to be part of the default selection)
+
+ -- Clement Lefebvre <root@linuxmint.com>  Tue, 02 Jun 2015 11:15:53 +0200
+
+cinnamon-screensaver (2.6.2) rafaela; urgency=medium
+
+  [ leigh123linux ]
+  * bump version to account for cinnamon-desktop systemd schema change
+
+ -- Clement Lefebvre <root@linuxmint.com>  Wed, 27 May 2015 10:01:57 +0200
+
+cinnamon-screensaver (2.6.1) rafaela; urgency=medium
+
+  * Replaced "use-systemd" with "screensaver-uses-logind" gsettings key
+
+ -- Clement Lefebvre <root@linuxmint.com>  Mon, 25 May 2015 10:35:11 +0200
+
+cinnamon-screensaver (2.6.0) rafaela; urgency=medium
+
+  * 2.6.0
+
+ -- Clement Lefebvre <root@linuxmint.com>  Tue, 19 May 2015 17:26:43 +0200
+
+cinnamon-screensaver (2.5.0) unstable; urgency=medium
+
+  * bump for development
+
+ -- Michael Webster <miketwebster@gmail.com>  Sat, 11 Apr 2015 09:09:01 -0400
+
+cinnamon-screensaver (2.4.2) betsy; urgency=medium
+
+  [ Michael Webster ]
+  * desktop file: Fix OnlyShowIn line, remove autogenerated .in file.
+  * gs-window-x11.c: Fix some leaks, readability
+  * gs-window-x11.c: Fix black background
+  * gnome-wall-clock.c:  Fix regressions from b021f6f07ad8b4295ddd755eadf3e031f4456fe6
+
+ -- Clement Lefebvre <root@linuxmint.com>  Mon, 30 Mar 2015 15:08:10 +0200
+
+cinnamon-screensaver (2.4.1) betsy; urgency=medium
+
+  * DBus listener: correctly reply so the client doesn't block waiting
+  * Reduce the number of wakeups
+
+ -- Clement Lefebvre <root@linuxmint.com>  Wed, 18 Feb 2015 13:37:22 +0100
+
+cinnamon-screensaver (2.4.0) rebecca; urgency=medium
+
+  * 2.4.0
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 31 Oct 2014 16:05:26 +0100
+
+cinnamon-screensaver (2.3.0) unstable; urgency=medium
+
+  * 2.3.0
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 27 Jun 2014 14:24:03 +0100
+
+cinnamon-screensaver (2.2.4) qiana; urgency=medium
+
+  [ Andrew Rossignol ]
+  * Fixed a transparency issue with certain themes.
+
+  [ Clement Lefebvre ]
+  * Fixed build issue
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 06 Jun 2014 16:44:50 +0100
+
+cinnamon-screensaver (2.2.3) qiana; urgency=medium
+
+  * 2.2.3
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 08 May 2014 09:38:18 +0100
+
+cinnamon-screensaver (2.2.2) qiana; urgency=medium
+
+  * 2.2.2
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 02 May 2014 16:46:15 +0100
+
+cinnamon-screensaver (2.2.1) qiana; urgency=medium
+
+  * 2.2.1
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 01 May 2014 14:48:00 +0100
+
+cinnamon-screensaver (2.2.0) qiana; urgency=medium
+
+  * 2.2.0
+
+ -- Clement Lefebvre <root@linuxmint.com>  Sat, 12 Apr 2014 13:07:30 +0100
+
+cinnamon-screensaver (2.0.3) petra; urgency=low
+
+  * 2.0.3
+
+ -- Clement Lefebvre <root@linuxmint.com>  Sat, 26 Oct 2013 18:34:24 +0100
+
+cinnamon-screensaver (2.0.2) petra; urgency=low
+
+  * 2.0.2
+
+ -- Clement Lefebvre <root@linuxmint.com>  Tue, 22 Oct 2013 14:40:55 +0100
+
+cinnamon-screensaver (2.0.1) petra; urgency=low
+
+  * 2.0.1
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 18 Oct 2013 15:59:15 +0100
+
+cinnamon-screensaver (2.0.0) petra; urgency=low
+
+  * 2.0.0
+
+ -- Clement Lefebvre <root@linuxmint.com>  Wed, 02 Oct 2013 16:14:24 +0100
+
+cinnamon-screensaver (1.9.1) petra; urgency=low
+
+  * 1.9.1
+
+ -- Clement Lefebvre <root@linuxmint.com>  Mon, 30 Sep 2013 14:17:40 +0100
+
+cinnamon-screensaver (1.8.0) olivia; urgency=low
+
+  * 1.8.0
+
+ -- Clement Lefebvre <root@linuxmint.com>  Sun, 05 May 2013 12:25:34 +0100
+
+cinnamon-screensaver (1.7.2) olivia; urgency=low
+
+  * 1.7.2
+
+ -- Clement Lefebvre <root@linuxmint.com>  Sun, 28 Apr 2013 11:37:04 +0100
+
+cinnamon-screensaver (1.7.1) olivia; urgency=low
+
+  * 1.7.1
+
+ -- Clement Lefebvre <root@linuxmint.com>  Tue, 19 Feb 2013 16:35:10 +0000
+
+cinnamon-screensaver (1.0.0) nadia; urgency=low
+
+  * Initial version (based on gnome-screensaver 3.4.1)
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 10 Jan 2013 16:50:43 +0000
+
