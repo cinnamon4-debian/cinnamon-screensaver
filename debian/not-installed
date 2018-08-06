@@ -9,3 +9,5 @@ usr/include/cinnamon-screensaver/
 etc/pam.d/cinnamon-screensaver
 
 usr/share/gir-1.0/CScreensaver-1.0.gir
+
+*.pyc
