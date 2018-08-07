@@ -1,8 +1,10 @@
-cinnamon-screensaver (3.8.2-1~) UNRELEASED; urgency=medium
+cinnamon-screensaver (3.8.2-1) unstable; urgency=medium
 
   * New upstream release (3.8.2).
+  * Ignore not installed pyc files
+  * Release to unstable
 
- -- Maximiliano Curia <maxy@debian.org>  Sun, 10 Jun 2018 16:07:40 +0200
+ -- Maximiliano Curia <maxy@debian.org>  Tue, 07 Aug 2018 14:51:36 +0200
 
 cinnamon-screensaver (3.8.1-1) experimental; urgency=medium
 
