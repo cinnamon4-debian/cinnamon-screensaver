@@ -26,8 +26,8 @@
 #endif
 
 enum {
-        MONITORS_CHANGED,
-        SCREEN_CHANGED,
+        SCREEN_MONITORS_CHANGED,
+        SCREEN_SIZE_CHANGED,
         LAST_SIGNAL
 };
 
@@ -378,15 +378,19 @@ on_monitors_changed (GdkScreen *gdk_screen, gpointer user_data)
 
     screen = CS_SCREEN (user_data);
 
+    reload_screen_info (screen);
+    g_signal_emit (screen, signals[SCREEN_SIZE_CHANGED], 0);
+
     gdk_flush ();
 
-    old_monitor_infos = screen->monitor_infos;
+    DEBUG ("CsScreen received 'monitors-changed' signal from GdkScreen\n");
 
+    old_monitor_infos = screen->monitor_infos;
     reload_monitor_infos (screen);
 
     g_free (old_monitor_infos);
 
-    g_signal_emit (screen, signals[MONITORS_CHANGED], 0);
+    g_signal_emit (screen, signals[SCREEN_MONITORS_CHANGED], 0);
 }
 
 static void
@@ -396,11 +400,10 @@ on_screen_changed (GdkScreen *gdk_screen, gpointer user_data)
 
     screen = CS_SCREEN (user_data);
 
-    gdk_flush ();
+    DEBUG ("CsScreen received 'size-changed' signal from GdkScreen\n");
 
     reload_screen_info (screen);
-
-    g_signal_emit (screen, signals[SCREEN_CHANGED], 0);
+    g_signal_emit (screen, signals[SCREEN_SIZE_CHANGED], 0);
 }
 
 static void
@@ -470,14 +473,14 @@ cs_screen_class_init (CsScreenClass *klass)
     object_class->finalize = cs_screen_finalize;
     object_class->dispose = cs_screen_dispose;
 
-    signals[MONITORS_CHANGED] = g_signal_new ("monitors-changed",
+    signals[SCREEN_MONITORS_CHANGED] = g_signal_new ("monitors-changed",
                                               G_TYPE_FROM_CLASS (object_class),
                                               G_SIGNAL_RUN_LAST,
                                               0,
                                               NULL, NULL, NULL,
                                               G_TYPE_NONE, 0);
 
-    signals[SCREEN_CHANGED] = g_signal_new ("size-changed",
+    signals[SCREEN_SIZE_CHANGED] = g_signal_new ("size-changed",
                                             G_TYPE_FROM_CLASS (object_class),
                                             G_SIGNAL_RUN_LAST,
                                             0,

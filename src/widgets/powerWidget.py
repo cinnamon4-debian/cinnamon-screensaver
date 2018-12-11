@@ -4,6 +4,8 @@ from gi.repository import Gtk, GObject
 
 from util import trackers
 import singletons
+import constants as c
+import status
 
 class PowerWidget(Gtk.Frame):
     """
@@ -29,6 +31,8 @@ class PowerWidget(Gtk.Frame):
 
         self.power_client = singletons.UPowerClient
 
+        self.battery_critical = False
+
         trackers.con_tracker_get().connect(self.power_client,
                                            "power-state-changed",
                                            self.on_power_state_changed)
@@ -39,11 +43,17 @@ class PowerWidget(Gtk.Frame):
 
         self.power_client.rescan_devices()
 
+        self.on_power_state_changed(self.power_client)
+
+    def refresh(self):
+        self.on_power_state_changed(self.power_client)
+
     def on_power_state_changed(self, client):
         for widget in self.box.get_children():
             widget.destroy()
 
         self.path_widget_pairs = []
+        self.battery_critical = False
 
         self.construct_icons()
 
@@ -64,6 +74,10 @@ class PowerWidget(Gtk.Frame):
         batteries = self.power_client.get_batteries()
 
         for path, battery in batteries:
+            if status.Debug:
+                print("powerWidget: Updating battery info: %s - icon: %s - percentage: %s" %
+                    (path, battery.get_property("icon-name"), battery.get_property("percentage")))
+
             image = Gtk.Image.new_from_icon_name(battery.get_property("icon-name"), Gtk.IconSize.LARGE_TOOLBAR)
             self.update_battery_tooltip(image, battery)
 
@@ -81,6 +95,8 @@ class PowerWidget(Gtk.Frame):
 
             if pct > 0:
                 text = _("%d%%" % pct)
+                if pct < c.BATTERY_CRITICAL_PERCENT:
+                    self.battery_critical = True
         except Exception as e:
             pass
 
