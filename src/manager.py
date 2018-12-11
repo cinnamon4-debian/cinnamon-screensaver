@@ -262,7 +262,10 @@ class ScreensaverManager(GObject.Object):
         if self.stage == None:
             return
 
-        self.stage.refresh()
+        if status.Debug:
+            print("manager: queuing stage refresh (login manager reported active?")
+
+        self.stage.queue_refresh_stage()
 
     def start_timers(self):
         """
@@ -281,8 +284,7 @@ class ScreensaverManager(GObject.Object):
 
     def cancel_unlock_widget(self):
         """
-        Return to sleep (not Awake) - hides the pointer and the unlock widget,
-        which also restarts plugins if necessary.
+        Return to sleep (not Awake) - hides the pointer and the unlock widget.
         """
         self.grab_stage()
         self.stage.cancel_unlocking();
