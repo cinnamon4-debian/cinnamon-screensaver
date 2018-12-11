@@ -2,9 +2,13 @@ Description: Switch to the Debian path for iso flags
 Author: marga@debian.org
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
---- a/src/passwordEntry.py
-+++ b/src/passwordEntry.py
-@@ -70,7 +70,7 @@
+---
+ src/passwordEntry.py |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- cinnamon-screensaver.git.orig/src/passwordEntry.py
++++ cinnamon-screensaver.git/src/passwordEntry.py
+@@ -71,7 +71,7 @@ class PasswordEntry(Gtk.Entry):
              name = self.keyboard_controller.get_current_icon_name()
  
              if name:
