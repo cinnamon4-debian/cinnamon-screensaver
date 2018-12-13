@@ -52,8 +52,13 @@ Recommends: libpam-gnome-keyring
 Breaks:
  cinnamon (<< 4.0),
  cinnamon-core (<< 4.0~),
- cinnamon-screensaver-x-plugin (<< 3.4.2-1~),
-Replaces: cinnamon-screensaver-x-plugin (<< 3.4.2-1~)
+ cinnamon-screensaver-pam-helper (<< 3.8),
+ cinnamon-screensaver-webkit-plugin (<< 3.9),
+ cinnamon-screensaver-x-plugin (<< 3.9)
+Replaces:
+ cinnamon-screensaver-pam-helper (<< 3.8),
+ cinnamon-screensaver-webkit-plugin (<< 3.9),
+ cinnamon-screensaver-x-plugin (<< 3.9)
 Description: Cinnamon screen saver and locker
  cinnamon-screensaver is a screen saver and locker that aims to have simple,
  sane and secure defaults, and be well integrated with the Cinnamon desktop.
